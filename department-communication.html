@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" />
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <div class="container">
+            <!-- 侧边栏导航 -->
+            <div class="sidebar">
+                <div class="logo">
+                    <h2>干部教师管理系统</h2>
+                </div>
+                <div class="nav-menu">
+                    <a href="dashboard.html" ><div class="nav-item">
+                        <i>📊</i>分析看板
+                    </div></a>
+                    <a href="personnel-kanban.html" ><div class="nav-item">
+                        <i>👥</i>人员看板
+                    </div></a>
+                    <a href="team-analysis.html"><div class="nav-item">
+                        <i>👥</i>班子分析
+                    </div></a>
+                    <a href="profile-list.html"><div class="nav-item">
+                        <i>👤</i>干部教师画像
+                    </div></a>
+                    <a href="relationship.html"><div class="nav-item">
+                        <i>🕸️</i>关系识别
+                    </div></a>
+                    <a href="talent.html"><div class="nav-item">
+                        <i>📈</i>梯队建设
+                    </div></a>
+                    <a href="adjustment-list.html"><div class="nav-item">
+                        <i>🔄</i>干部教师调整
+                    </div></a>
+                    <a href=""><div class="nav-item  active">
+                        <i>📩</i>部门对接
+                    </div></a>
+                    <a href="training.html"><div class="nav-item">
+                        <i>🎓</i>培训筛选
+                    </div></a>
+                    <a href="query.html"><div class="nav-item">
+                        <i>🔍</i>查询统计
+                    </div></a>
+                    <a href="user-management.html"><div class="nav-item">
+                        <i>⚙️</i>系统管理
+                    </div></a>
+                </div>
+            </div>
+            <div class="main-content">
+                <!-- 页面9: 部门对接 -->
+                <div id="department-communication-page" class="page">
+                    <div class="header">
+                        <h2>部门对接</h2>
+                        <div class="user-info">
+                            <div class="user-avatar">管</div>
+                            <span>管理员</span>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab active" onclick="showCommunicationTab('create-demand')">发起需求</div>
+                        <div class="tab" onclick="showCommunicationTab('my-demands')">我的需求</div>
+                        <div class="tab" onclick="showCommunicationTab('todo-list')">待办任务</div>
+                        <div class="tab" onclick="showCommunicationTab('completed-tasks')">已完成任务</div>
+                    </div>
+
+                    <!-- 领导发起需求 -->
+                    <div id="create-demand" class="communication-tab">
+                        <div class="card">
+                            <div class="card-title">新建人才需求</div>
+                            <form id="demand-form">
+                                <div class="form-group">
+                                    <label class="form-label">需求标题</label>
+                                    <input type="text" class="form-control" placeholder="例如：大数据专业建设人才需求">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">需求类型</label>
+                                    <select class="form-control">
+                                        <option>新专业建设</option>
+                                        <option>学科发展</option>
+                                        <option>岗位补充</option>
+                                        <option>人才梯队</option>
+                                        <option>其他</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">需求部门</label>
+                                    <input type="text" class="form-control" value="大数据学院" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">需求负责人</label>
+                                    <input type="text" class="form-control" value="张院长" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">需求详情</label>
+                                    <textarea class="form-control" rows="5" placeholder="请详细描述人才需求..."></textarea>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-title">人才需求明细</div>
+                                    <table id="position-table">
+                                        <thead>
+                                            <tr>
+                                                <th>岗位类型</th>
+                                                <th>岗位级别</th>
+                                                <th>需求人数</th>
+                                                <th>专业要求</th>
+                                                <th>其他要求</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <select class="form-control">
+                                                        <option>专业负责人</option>
+                                                        <option>骨干教师</option>
+                                                        <option>普通教师</option>
+                                                        <option>实验员</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select class="form-control">
+                                                        <option>教授</option>
+                                                        <option>副教授</option>
+                                                        <option>讲师</option>
+                                                    </select>
+                                                </td>
+                                                <td><input type="number" class="form-control" value="1"></td>
+                                                <td><input type="text" class="form-control" placeholder="计算机、大数据相关"></td>
+                                                <td><input type="text" class="form-control" placeholder="5年以上经验"></td>
+                                                <td><button type="button" class="btn btn-secondary" onclick="removePosition(this)">删除</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <button type="button" class="btn" onclick="addPosition()">添加岗位</button>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">期望完成时间</label>
+                                    <input type="date" class="form-control">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">附件</label>
+                                    <input type="file" class="form-control">
+                                    <small class="text-muted">可上传会议纪要、建设方案等相关文件</small>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn" onclick="submitDemand()">提交需求</button>
+                                    <button type="button" class="btn btn-secondary">保存草稿</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 我的需求 -->
+                    <div id="my-demands" class="communication-tab" style="display:none;">
+                        <div class="filter-bar">
+                            <div class="filter-item">
+                                <label>状态</label>
+                                <select>
+                                    <option>全部</option>
+                                    <option>待处理</option>
+                                    <option>处理中</option>
+                                    <option>已完成</option>
+                                    <option>已关闭</option>
+                                </select>
+                            </div>
+                            <div class="filter-item">
+                                <label>时间范围</label>
+                                <input type="date"> 至 <input type="date">
+                            </div>
+                            <button class="btn">查询</button>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">我发起的需求</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>需求编号</th>
+                                        <th>需求标题</th>
+                                        <th>需求类型</th>
+                                        <th>提交时间</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>XQ202306001</td>
+                                        <td>大数据专业建设人才需求</td>
+                                        <td>新专业建设</td>
+                                        <td>2023-06-10</td>
+                                        <td><span class="status-badge status-approved">处理中</span></td>
+                                        <td><a href="#" onclick="showDemandDetail('XQ202306001')">查看</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>XQ202305015</td>
+                                        <td>人工智能实验室人才补充</td>
+                                        <td>岗位补充</td>
+                                        <td>2023-05-20</td>
+                                        <td><span class="status-badge status-approved">已完成</span></td>
+                                        <td><a href="#" onclick="showDemandDetail('XQ202305015')">查看</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="pagination">
+                                <div class="page-item active">1</div>
+                                <div class="page-item">2</div>
+                                <div class="page-item">3</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 待办任务 -->
+                    <div id="todo-list" class="communication-tab" style="display:none;">
+                        <div class="filter-bar">
+                            <div class="filter-item">
+                                <label>优先级</label>
+                                <select>
+                                    <option>全部</option>
+                                    <option>高</option>
+                                    <option>中</option>
+                                    <option>低</option>
+                                </select>
+                            </div>
+                            <div class="filter-item">
+                                <label>需求类型</label>
+                                <select>
+                                    <option>全部类型</option>
+                                    <option>新专业建设</option>
+                                    <option>学科发展</option>
+                                    <option>岗位补充</option>
+                                </select>
+                            </div>
+                            <button class="btn">查询</button>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">待办任务</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>需求编号</th>
+                                        <th>需求标题</th>
+                                        <th>需求部门</th>
+                                        <th>提交时间</th>
+                                        <th>期望完成</th>
+                                        <th>优先级</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>XQ202306001</td>
+                                        <td>大数据专业建设人才需求</td>
+                                        <td>大数据学院</td>
+                                        <td>2023-06-10</td>
+                                        <td>2023-09-01</td>
+                                        <td><span class="status-badge status-approved">高</span></td>
+                                        <td><a href="#" onclick="processDemand('XQ202306001')">处理</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>XQ202306005</td>
+                                        <td>英语专业师资补充</td>
+                                        <td>外国语学院</td>
+                                        <td>2023-06-15</td>
+                                        <td>2023-08-30</td>
+                                        <td><span class="status-badge status-pending">中</span></td>
+                                        <td><a href="#" onclick="processDemand('XQ202306005')">处理</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 已完成任务 -->
+                    <div id="completed-tasks" class="communication-tab" style="display:none;">
+                        <div class="filter-bar">
+                            <div class="filter-item">
+                                <label>完成时间</label>
+                                <input type="date"> 至 <input type="date">
+                            </div>
+                            <div class="filter-item">
+                                <label>需求部门</label>
+                                <select>
+                                    <option>全部部门</option>
+                                    <option>大数据学院</option>
+                                    <option>外国语学院</option>
+                                    <option>文学院</option>
+                                </select>
+                            </div>
+                            <button class="btn">查询</button>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">已完成任务</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>需求编号</th>
+                                        <th>需求标题</th>
+                                        <th>需求部门</th>
+                                        <th>提交时间</th>
+                                        <th>完成时间</th>
+                                        <th>处理人</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>XQ202305015</td>
+                                        <td>人工智能实验室人才补充</td>
+                                        <td>计算机学院</td>
+                                        <td>2023-05-20</td>
+                                        <td>2023-06-05</td>
+                                        <td>李人事</td>
+                                        <td><a href="#" onclick="showCompletedDetail('XQ202305015')">查看</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>XQ202304012</td>
+                                        <td>管理学院领导班子调整</td>
+                                        <td>管理学院</td>
+                                        <td>2023-04-10</td>
+                                        <td>2023-05-15</td>
+                                        <td>王人事</td>
+                                        <td><a href="#" onclick="showCompletedDetail('XQ202304012')">查看</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="pagination">
+                                <div class="page-item active">1</div>
+                                <div class="page-item">2</div>
+                                <div class="page-item">3</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 页面10: 需求详情 - 领导查看 -->
+                <div id="demand-detail-page" class="page" style="display:none;">
+                    <div class="header">
+                        <h2>需求详情</h2>
+                        <div class="user-info">
+                            <div class="user-avatar">管</div>
+                            <span>管理员</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">
+                            <span>大数据专业建设人才需求</span>
+                            <span class="status-badge status-approved">处理中</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 页面加载完成后显示发起需求页面
+            window.onload = function() {
+                showCommunicationTab('create-demand');
+            };
+
+            // 显示不同的沟通标签页
+            function showCommunicationTab(tabId) {
+                // 获取所有的沟通标签页
+                var tabs = document.querySelectorAll('.communication-tab');
+                // 遍历所有标签页，隐藏它们
+                tabs.forEach(function(tab) {
+                    tab.style.display = 'none';
+                });
+
+                // 获取要显示的标签页
+                var selectedTab = document.getElementById(tabId);
+                // 显示选中的标签页
+                if (selectedTab) {
+                    selectedTab.style.display = 'block';
+                }
+
+                // 获取所有的标签
+                var tabButtons = document.querySelectorAll('.tab');
+                // 遍历所有标签，移除 active 类
+                tabButtons.forEach(function(button) {
+                    button.classList.remove('active');
+                });
+
+                // 获取点击的标签
+                var clickedButton = document.querySelector('.tab[onclick="showCommunicationTab(\'' + tabId + '\')"]');
+                // 给点击的标签添加 active 类
+                if (clickedButton) {
+                    clickedButton.classList.add('active');
+                }
+            }
+
+            // 添加岗位函数
+            function addPosition() {
+                var table = document.getElementById('position-table').getElementsByTagName('tbody')[0];
+                var newRow = table.insertRow();
+
+                var cell1 = newRow.insertCell(0);
+                var select1 = document.createElement('select');
+                select1.className = 'form-control';
+                select1.innerHTML = `
+                    <option>专业负责人</option>
+                    <option>骨干教师</option>
+                    <option>普通教师</option>
+                    <option>实验员</option>
+                `;
+                cell1.appendChild(select1);
+
+                var cell2 = newRow.insertCell(1);
+                var select2 = document.createElement('select');
+                select2.className = 'form-control';
+                select2.innerHTML = `
+                    <option>教授</option>
+                    <option>副教授</option>
+                    <option>讲师</option>
+                `;
+                cell2.appendChild(select2);
+
+                var cell3 = newRow.insertCell(2);
+                var input1 = document.createElement('input');
+                input1.type = 'number';
+                input1.className = 'form-control';
+                input1.value = 1;
+                cell3.appendChild(input1);
+
+                var cell4 = newRow.insertCell(3);
+                var input2 = document.createElement('input');
+                input2.type = 'text';
+                input2.className = 'form-control';
+                input2.placeholder = '计算机、大数据相关';
+                cell4.appendChild(input2);
+
+                var cell5 = newRow.insertCell(4);
+                var input3 = document.createElement('input');
+                input3.type = 'text';
+                input3.className = 'form-control';
+                input3.placeholder = '5年以上经验';
+                cell5.appendChild(input3);
+
+                var cell6 = newRow.insertCell(5);
+                var button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-secondary';
+                button.innerHTML = '删除';
+                button.onclick = function() {
+                    removePosition(this);
+                };
+                cell6.appendChild(button);
+            }
+
+            // 删除岗位函数
+            function removePosition(button) {
+                var row = button.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+            }
+
+            // 提交需求函数
+            function submitDemand() {
+                // 这里可以添加提交表单数据的逻辑
+                alert('需求已提交');
+            }
+
+            // 显示需求详情函数
+            function showDemandDetail(demandId) {
+                // 这里可以添加显示需求详情的逻辑
+                alert('查看需求详情：' + demandId);
+            }
+
+            // 处理需求函数
+            function processDemand(demandId) {
+                // 这里可以添加处理需求的逻辑
+                alert('处理需求：' + demandId);
+            }
+
+            // 显示已完成任务详情函数
+            function showCompletedDetail(demandId) {
+                // 这里可以添加显示已完成任务详情的逻辑
+                alert('查看已完成任务详情：' + demandId);
+            }
+        </script>
+    </body>
+</html>
