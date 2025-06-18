@@ -1,0 +1,64 @@
+import { createRouter,createWebHashHistory,createWebHistory } from "vue-router";
+import dashboard from "../views/dashboard.vue";
+import person_kb from "../views/person_kb.vue";
+import team_analysis from "../views/team_analysis.vue";
+import profile_list from "../views/profile_list.vue";
+import talent from "../views/talent.vue";
+import department_communication from "../views/department_communication.vue";
+import training from "../views/training.vue";
+import userInfo from "../views/userInfo.vue";
+import LoginPage from '../views/LoginPage.vue';
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes: [
+    {
+      path: "/",
+      name: "dashboard",
+      component: dashboard,
+    },
+    {
+      path:"/person_kb",
+      name:"person_kb",
+      component: person_kb, 
+    },
+    {
+      path:"/team_analysis",
+      name:"team_analysis",
+      component: team_analysis,
+    },
+    {
+      path:"/profile_list",
+      name:"profile_list",
+      component: profile_list,
+    },
+    {
+      path:"/talent",
+      name:"talent",
+      component: talent,
+    },
+    {
+      path:"/department_communication",
+      name:"department_communication",
+      component: department_communication,
+    },
+    {
+      path:"/training",
+      name:"training",
+      component: training,
+    },
+    {
+      path:"/userInfo",
+      name:"userInfo",
+      component: userInfo,
+    },
+    {
+      path:'/login',
+      name:'Login',
+      component: LoginPage,
+      meta: {hideLayout: true}
+    }
+]
+});
+
+export default router
+
