@@ -293,7 +293,7 @@
         }
         
         // 登录成功后跳转到主页
-        router.push('/');
+        router.push('/home');
       } else {
         throw new Error(loginType.value === 'username' 
           ? '用户名或密码不正确' 

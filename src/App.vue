@@ -6,7 +6,7 @@
                 <h2>干部教师管理系统</h2>
             </div>
             <div class="nav-menu">
-              <Router-link to="/">
+              <Router-link to="/home">
                 <div class="nav-item">
                   <i>📊</i>分析看板
                 </div>
@@ -39,7 +39,7 @@
               <Router-link to="/training">
                 <div class="nav-item">
                     <i>🎓</i>培训筛选
-                  </div>
+                </div>
               </Router-link>
         </div>
   </div>

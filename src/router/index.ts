@@ -12,7 +12,7 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     {
-      path: "/",
+      path: "/home",
       name: "dashboard",
       component: dashboard,
     },
@@ -50,9 +50,10 @@ const router = createRouter({
       path:"/userInfo",
       name:"userInfo",
       component: userInfo,
+      meta: { hideLayout: true }
     },
     {
-      path:'/login',
+      path:'/',
       name:'Login',
       component: LoginPage,
       meta: {hideLayout: true}
