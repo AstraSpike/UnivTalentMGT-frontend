@@ -23,9 +23,8 @@
 				
 				                <div class="card">
 				                    <div class="card-title">队伍现状分析</div>
-				                    <div class="chart-container" style="height:300px;">
-				                        [梯队结构图]
-				                    </div>
+				                    <!-- 为图表添加 ref -->
+				                    <div ref="structureChart" class="chart-container" style="height:300px;"></div>
 				                    <p>当前学科带头人梯队年龄结构呈现"两头小中间大"的特点，35-45岁中青年教师占比60%，但45岁以上资深专家和35岁以下青年骨干比例偏低，存在潜在断层风险。</p>
 				                </div>
 				
@@ -118,9 +117,48 @@
 </template>
 
 <script lang="ts" setup name="talent">
+import { ref, onMounted } from 'vue';
+import * as echarts from 'echarts';
 
+// 定义图表 ref
+const structureChart = ref(null);
+
+onMounted(() => {
+    if (structureChart.value) {
+        // 初始化图表
+        const chart = echarts.init(structureChart.value);
+        // 模拟梯队结构数据
+        const data = [
+            { value: 60, name: '35 - 45岁' },
+            { value: 20, name: '45岁以上' },
+            { value: 20, name: '35岁以下' }
+        ];
+        // 配置图表选项
+        const option = {
+            tooltip: {
+                trigger: 'item'
+            },
+            series: [
+                {
+                    name: '梯队结构',
+                    type: 'pie',
+                    radius: '50%',
+                    data: data,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        // 设置图表选项
+        chart.setOption(option);
+    }
+});
 </script>
 
-<style src="@/components/style.css">
-
+<style src="../components/style.css">
 </style>

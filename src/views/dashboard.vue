@@ -224,5 +224,5 @@ onMounted(() => {
 });
 </script>
 
-<style src="@/components/style.css">
+<style src="../components/style.css">
 </style>

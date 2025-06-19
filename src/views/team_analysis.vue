@@ -22,18 +22,16 @@
 		
 		    <div class="card">
 		        <div class="card-title">校级领导班子结构分析</div>
-		        <div class="chart-container" style="height:400px;">
-		            [班子结构雷达图]
-		        </div>
+		        <!-- 为班子结构雷达图准备 DOM -->
+		        <div ref="structureChart" class="chart-container" style="height:400px;"></div>
 		        <div class="card-title">分析结果</div>
 		        <p>当前校级领导班子年龄结构合理，专业背景覆盖全面，但管理经验分布不均，部分成员学术成果较为薄弱。建议补充1-2名具有丰富管理经验和突出学术成果的成员。</p>
 		    </div>
 		
 		    <div class="card">
 		        <div class="card-title">绩效与协同评估</div>
-		        <div class="chart-container" style="height:300px;">
-		            [绩效协同热力图]
-		        </div>
+		        <!-- 为绩效协同热力图准备 DOM -->
+		        <div ref="performanceChart" class="chart-container" style="height:300px;"></div>
 		        <table>
 		            <thead>
 		                <tr>
@@ -79,9 +77,79 @@
 </template>
 
 <script lang="ts" setup name="team_analysis">
+import { ref, onMounted } from 'vue';
+import * as echarts from 'echarts';
 
+// 定义图表的 ref
+const structureChart = ref(null);
+const performanceChart = ref(null);
+
+onMounted(() => {
+    // 班子结构雷达图
+    if (structureChart.value) {
+        const chart = echarts.init(structureChart.value);
+        const option = {
+            radar: {
+                indicator: [
+                    { name: '年龄结构', max: 100 },
+                    { name: '专业背景', max: 100 },
+                    { name: '管理经验', max: 100 },
+                    { name: '学术成果', max: 100 },
+                    { name: '团队协作', max: 100 }
+                ]
+            },
+            series: [{
+                type: 'radar',
+                data: [{
+                    value: [80, 90, 60, 70, 85],
+                    name: '校级领导班子'
+                }]
+            }]
+        };
+        chart.setOption(option);
+    }
+
+    // 绩效协同热力图
+    if (performanceChart.value) {
+        const chart = echarts.init(performanceChart.value);
+        const data = [];
+        const indicators = ['决策效率', '学科建设成果', '团队凝聚力', '资源分配', '对外合作'];
+        const timePeriods = ['Q1', 'Q2', 'Q3', 'Q4'];
+
+        for (let i = 0; i < indicators.length; i++) {
+            for (let j = 0; j < timePeriods.length; j++) {
+                data.push([j, i, Math.floor(Math.random() * 100)]);
+            }
+        }
+
+        const option = {
+            tooltip: {},
+            visualMap: {
+                min: 0,
+                max: 100,
+                calculable: true,
+                orient: 'vertical',
+                left: 'left',
+                top: 'center'
+            },
+            xAxis: {
+                type: 'category',
+                data: timePeriods
+            },
+            yAxis: {
+                type: 'category',
+                data: indicators
+            },
+            series: [{
+                name: '绩效协同',
+                type: 'heatmap',
+                data: data
+            }]
+        };
+        chart.setOption(option);
+    }
+});
 </script>
 
-<style src="@/components/style.css">
-
+<style src="../components/style.css">
 </style>

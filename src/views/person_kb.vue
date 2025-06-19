@@ -495,7 +495,7 @@
 <script lang="ts" setup name="person_kb"> 
 </script>
 
-<style src="@/components/style.css">
+<style src="../components/style.css">
 
 </style>
 

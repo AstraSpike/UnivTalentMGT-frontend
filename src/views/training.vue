@@ -36,9 +36,8 @@
 						
 						    <div class="card">
 						        <div class="card-title">培训需求分析</div>
-						        <div class="chart-container" style="height:300px;">
-						            [培训需求分析图表]
-						        </div>
+						        <!-- 为图表添加 ref -->
+						        <div ref="trainingChart" class="chart-container" style="height:300px;"></div>
 						        <table>
 						            <thead>
 						                <tr>
@@ -134,10 +133,48 @@
 </template>
 
 <script lang="ts" setup name="training">
+import { ref, onMounted } from 'vue';
+import * as echarts from 'echarts';
 
+// 定义图表 ref
+const trainingChart = ref(null);
 
+onMounted(() => {
+    if (trainingChart.value) {
+        // 初始化图表
+        const chart = echarts.init(trainingChart.value);
+        // 模拟培训需求数据
+        const data = [
+            { value: 15, name: '教学能力' },
+            { value: 22, name: '科研能力' },
+            { value: 8, name: '管理能力' }
+        ];
+        // 配置图表选项
+        const option = {
+            tooltip: {
+                trigger: 'item'
+            },
+            series: [
+                {
+                    name: '培训需求',
+                    type: 'pie',
+                    radius: '50%',
+                    data: data,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        // 设置图表选项
+        chart.setOption(option);
+    }
+});
 </script>
 
-<style src="@/components/style.css">
-
+<style src="../components/style.css">
 </style>
