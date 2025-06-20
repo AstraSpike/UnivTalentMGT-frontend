@@ -1,6 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import PersonnelService from '../services/personnelService.js';
+import PersonDetail from '@/views/PersonDetail.vue'
 
 /**
  * 获取干部教师列表
@@ -50,5 +51,13 @@ router.get('/exportExcel', async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
-
-export default router;    
+export default [
+  {
+    path: '/person/detail/:id',
+    name: 'PersonDetail',
+    component: PersonDetail,
+    meta: {
+      requiresAuth: true
+    }
+  },router
+]

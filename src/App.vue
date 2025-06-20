@@ -1,7 +1,7 @@
 <template>
    <div class="container" v-if="!$route.meta.hideLayout">
         <!-- 侧边栏导航 -->
-        <div class="sidebar">
+        <div class="sidebar" v-show="!isFullScreen" :class="{ 'sidebar-hidden': isFullScreen }">
             <div class="logo">
                 <h2>干部教师管理系统</h2>
             </div>
@@ -43,7 +43,7 @@
               </Router-link>
         </div>
   </div>
-        <div class="main-content">
+        <div class="main-content"  :class="{ 'full-screen': isFullScreen }">
           <div class="header">
 						        <h2>欢迎您</h2>
 						        <div class="user-info">
@@ -59,10 +59,15 @@
     <router-view v-else />
   </template>
   <script setup lang="ts" name="App">
-  import { ref, reactive } from 'vue'
+  import { ref, reactive,onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { RouterView, RouterLink } from 'vue-router';
-
+  const isFullScreen = ref(false);
+  onMounted(() => {
+  window.addEventListener('toggleFullScreen', (e: any) => {
+    isFullScreen.value = e.detail;
+  });
+});
   </script>
 <style src="./components/style.css">
 .header {
@@ -72,5 +77,20 @@
     padding: 10px 0;
     margin-bottom: 20px;
     border-bottom: 1px solid #e8e8e8;
+}
+/* 添加全屏样式 */
+.main-content.full-screen {
+  margin-left: 0 !important;
+  padding: 0 !important;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* 确保全屏时无滚动条 */
+body:fullscreen .main-content,
+body:-webkit-full-screen .main-content,
+body:-moz-full-screen .main-content {
+  height: 100%;
+  width: 100%;
 }
 </style>
