@@ -231,7 +231,7 @@ const startCountdown = () => {
   countdown.value = 60;
   
   // 清除之前的计时器
-  if (countdownTimer) {
+  if (typeof countdownTimer === 'number') {
       clearInterval(countdownTimer);
   }
   
@@ -240,7 +240,7 @@ const startCountdown = () => {
       if (countdown.value > 0) {
           countdown.value--;
       } else {
-          clearInterval(countdownTimer);
+          clearInterval(countdownTimer as number);
           countdownTimer = null;
       }
   }, 1000);
@@ -248,7 +248,7 @@ const startCountdown = () => {
 
 // 组件卸载时清除计时器
 onUnmounted(() => {
-  if (countdownTimer) {
+  if (countdownTimer !== null) {
       clearInterval(countdownTimer);
   }
 });

@@ -107,6 +107,7 @@ const toggleDrawing = () => {
 
 <style>
 /* 基础重置样式 */
+@import url('https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css');
 * {
   margin: 0;
   padding: 0;
@@ -261,7 +262,4 @@ body {
   justify-content: center;
   font-weight: bold;
 }
-
-/* 确保引入 Font Awesome */
-@import url('https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css');
 </style>

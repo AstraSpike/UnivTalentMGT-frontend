@@ -8,9 +8,6 @@
             <i class="fa fa-arrow-left"></i>
           </div>
           <h1 class="header-title">个人信息</h1>
-          <!-- <button class="edit-button" @click="handleEdit">
-            <i class="fa fa-edit"></i> 编辑
-          </button> -->
         </div>
       </div>
     </header>
@@ -114,7 +111,7 @@
             </div>
             <div class="item-info">
               <div class="item-title">密码</div>
-              <div class="item-subtitle">上次修改: {{ user.security.passwordLastModified }}</div>
+              <div class="item-subtitle">{{ user.security.passwordLastModified }}</div>
             </div>
             <div class="item-action">
               <i class="fa fa-angle-right"></i>
@@ -127,7 +124,7 @@
             </div>
             <div class="item-info">
               <div class="item-title">实名认证</div>
-              <div class="item-subtitle text-success">已认证</div>
+              <div class="item-subtitle" :class="{'text-success': user.security.verified}">{{ user.security.verified ? '已认证' : '未认证' }}</div>
             </div>
             <div class="item-action">
               <i class="fa fa-angle-right"></i>
@@ -140,7 +137,7 @@
             </div>
             <div class="item-info">
               <div class="item-title">手机号</div>
-              <div class="item-subtitle">已绑定: {{ user.security.phone }}</div>
+              <div class="item-subtitle">{{ user.security.phoneVerified ? '已绑定: ' + user.security.phone : '未绑定' }}</div>
             </div>
             <div class="item-action">
               <i class="fa fa-angle-right"></i>
@@ -189,15 +186,55 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+
+// 定义用户详细信息接口
+interface UserDetail {
+  name: string;
+  gender: string;
+  politicalStatus: string;
+  title: string;
+  education: string;
+  hireDate: string;
+}
+
+// 定义用户统计信息接口
+interface UserStats {
+  courses: number;
+  students: number;
+  projects: number;
+}
+
+// 定义用户安全信息接口
+interface UserSecurity {
+  passwordLastModified: string;
+  verified: boolean;
+  phone: string;
+  phoneVerified: boolean;
+}
+
+// 定义完整用户信息接口
+interface User {
+  id: string;
+  name: string;
+  avatar: string;
+  department: string;
+  title: string;
+  email: string;
+  phone: string;
+  birthday: string;
+  detail: UserDetail;
+  stats: UserStats;
+  security: UserSecurity;
+}
 
 // 引入路由
 const router = useRouter();
 
 // 用户数据
-const user = ref({
+const user = ref<User>({
   id: '201800123',
   name: '张教授',
   avatar: 'https://picsum.photos/200/200?random=1',
@@ -227,25 +264,22 @@ const user = ref({
   }
 });
 
-// 交互功能处理函数
-const handleEdit = () => {
-  console.log('编辑个人资料');
-  router.push('/userInfo/edit'); // 导航到编辑页面
-};
-
 const handleChangePassword = () => {
   console.log('触发修改密码逻辑');
   // 此处可添加打开密码修改模态框的逻辑
+  router.push('/userInfo/changePassword');
 };
 
 const handleViewVerification = () => {
   console.log('查看实名认证详情');
   // 此处可添加打开认证详情页的逻辑
+  router.push('/userInfo/verification');
 };
 
 const handleChangePhone = () => {
   console.log('修改手机号');
   // 此处可添加打开手机号修改页面的逻辑
+  router.push('/userInfo/changePhone');
 };
 
 const handleViewLoginHistory = () => {
@@ -262,7 +296,7 @@ const handleLogout = () => {
   if (confirm('确定要退出登录吗？')) {
     console.log('执行退出登录');
     localStorage.removeItem('token'); // 清除登录凭证
-    router.push('/'); // 导航到登录页
+    router.push('/login'); // 导航到登录页
   }
 };
 
@@ -270,6 +304,13 @@ const goBack = () => {
   router.go(-1); // 返回上一页
 };
 </script>
+
+<style scoped>
+/* 新增文本状态颜色类 */
+.text-success {
+  color: #52c41a;
+}
+</style>
 
 <style scoped>
 /* 导入字体图标 */
@@ -288,7 +329,6 @@ const goBack = () => {
   --success-color: #36D399;
   --error-color: #F87272;
 }
-
 .user-profile-container {
   font-family: 'Inter', system-ui, sans-serif;
   background-color: var(--bg-color);
@@ -346,22 +386,6 @@ const goBack = () => {
   font-weight: 600;
   color: var(--text-color);
 }
-
-.edit-button {
-  color: var(--primary-color);
-  font-weight: 500;
-  transition: color 0.2s;
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.edit-button:hover {
-  opacity: 0.8;
-}
-
 /* 个人信息卡片样式 */
 .profile-card {
   background-color: var(--card-bg);

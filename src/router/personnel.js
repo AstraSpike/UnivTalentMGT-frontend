@@ -25,7 +25,7 @@ router.get('/list', async (req, res) => {
 /**
  * 获取干部教师详情
  * @route GET /api/personnel/detail/:id
- * @param {number} id - 人员 ID
+ * @param {string} id - 人员 ID
  */
 router.get('/detail/:id', async (req, res) => {
     try {

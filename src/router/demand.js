@@ -85,7 +85,7 @@ router.get('/detail/:id', async (req, res) => {
 /**
  * 处理需求
  * @route POST /api/demand/process/:id
- * @param {string} id - 需求 ID
+ * @param {number} id - 需求 ID
  */
 router.post('/process/:id', async (req, res) => {
     try {
