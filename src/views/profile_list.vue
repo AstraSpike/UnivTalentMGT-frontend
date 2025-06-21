@@ -113,8 +113,7 @@ const personnelList = ref([
     // 其他人员数据...
 ]);
 </script>
-
-<style scoped>
+<style src="../components/style.css">
 .detail-link {
     color: #1890ff;
     text-decoration: none;
@@ -123,7 +122,4 @@ const personnelList = ref([
 .detail-link:hover {
     text-decoration: underline;
 }
-</style>
-<style src="../components/style.css">
-
 </style>
