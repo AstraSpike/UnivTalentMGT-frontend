@@ -96,25 +96,59 @@
 </template>
 
 <script lang="ts" setup name="profile-list">
-import { ref } from 'vue';
+import { ref,onMounted } from 'vue';
+// 为了解决找不到模块声明文件的问题，显式指定类型为 any
+import personnelService from '../service/personnelService';
+const typedPersonnelService: any = personnelService;
+// const personnelList = ref([
+//     {
+//         id: 1,
+//         name: '张教授',
+//         gender: '男',
+//         age: 45,
+//         department: '文学院',
+//         title: '教授',
+//         teachingScore: 92,
+//         researchScore: 88,
+//         tags: ['教学名师', '科研骨干']
+//     },
+//     // 其他人员数据...
+// ]);
 
-const personnelList = ref([
-    {
-        id: 1,
-        name: '张教授',
-        gender: '男',
-        age: 45,
-        department: '文学院',
-        title: '教授',
-        teachingScore: 92,
-        researchScore: 88,
-        tags: ['教学名师', '科研骨干']
-    },
-    // 其他人员数据...
-]);
+//定义响应式数据
+const personnelList = ref([])
+const loading = ref(false)
+const searchName = ref('')
+const selectedDepartment = ref('')
+const currentPage = ref(1)
+const pageSize = ref(10)
+
+// 获取干部教师列表
+const fetchPersonnelList = async () => {
+  loading.value = true
+  try {
+    const params = {
+      name: searchName.value,
+      department: selectedDepartment.value,
+      page: currentPage.value,
+      pageSize: pageSize.value
+    }
+    
+    const { data } = await personnelService.getList(params)
+    personnelList.value = data.personnelList
+  } catch (error) {
+    console.error('获取干部教师列表失败', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 生命周期钩子
+onMounted(() => {
+  fetchPersonnelList()
+})
 </script>
-
-<style scoped>
+<style src="../components/style.css">
 .detail-link {
     color: #1890ff;
     text-decoration: none;
@@ -123,7 +157,4 @@ const personnelList = ref([
 .detail-link:hover {
     text-decoration: underline;
 }
-</style>
-<style src="../components/style.css">
-
 </style>

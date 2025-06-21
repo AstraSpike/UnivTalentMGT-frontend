@@ -1,5 +1,5 @@
 import UserModel from '../models/userModel.js';
-
+import axios from 'axios';
 class UserService {
     /**
      * 获取用户信息
@@ -24,5 +24,21 @@ class UserService {
         return await UserModel.changePhone(phoneData);
     }
 }
-
-export default UserService;    
+const userService = {
+    // 获取用户信息
+    getInfo() {
+      return axios.get('/api/user/info');
+    },
+    
+    // 修改密码
+    changePassword(passwordData) {
+      return axios.post('/api/user/changePassword', passwordData);
+    },
+    
+    // 修改手机号
+    changePhone(phoneData) {
+      return axios.post('/api/user/changePhone', phoneData);
+    }
+  };
+  
+export default UserService;userService;   
