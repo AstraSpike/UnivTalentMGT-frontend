@@ -157,8 +157,4 @@ onMounted(() => {
 .detail-link:hover {
     text-decoration: underline;
 }
-<<<<<<< HEAD
 </style>
-=======
-</style>
->>>>>>> c816adf7261eee825bda5272e266fd7647fc3911

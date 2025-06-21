@@ -1,7 +1,6 @@
 <template>
 <div class="main-content">
 						<div id="training-page" class="page">
-						
 						    <div class="filter-bar">
 						        <div class="filter-item">
 						            <label>培训类型</label>
@@ -176,5 +175,5 @@ onMounted(() => {
 });
 </script>
 
-<style src="../components/style.css">
+<style src="../components/style.css" scoped>
 </style>
