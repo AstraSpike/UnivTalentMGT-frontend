@@ -1,4 +1,5 @@
 import axios from 'axios';
+import service from '../service/request';
 
 class AuthModel {
     /**
@@ -8,7 +9,7 @@ class AuthModel {
     static async login(loginData) {
         try {
             // 调用后端接口进行登录验证
-            const response = await axios.post('/api/login', loginData);
+            const response = await service.post('/users/login', loginData);
             return response.data;
         } catch (error) {
             console.error('登录失败:', error);

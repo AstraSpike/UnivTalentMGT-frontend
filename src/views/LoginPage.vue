@@ -115,10 +115,10 @@
       </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
+import AuthModel from '../models/authModel';
 
 // 引入路由
 const router = useRouter();
@@ -261,24 +261,16 @@ const handleLogin = async () => {
   loginError.value = '';
   
   try {
-      // 模拟登录API调用
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 模拟登录成功
-      const mockResponse = {
-          success: true,
-          token: 'mock-token-1234567890',
-          user: {
-              id: 1,
-              name: loginType.value === 'userid' ? '张教授' : '李老师',
-              role: 'teacher'
-          }
+      const loginData = {
+        identifier: form.identifier,
+        credential: form.credential
       };
+      const response = await AuthModel.login(loginData);
       
-      if (mockResponse.success) {
+      if (response.success) {
           // 存储认证信息
-          localStorage.setItem('token', mockResponse.token);
-          localStorage.setItem('user', JSON.stringify(mockResponse.user));
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('user', JSON.stringify(response.user));
           
           // 如果勾选了记住我，则设置长期存储
           if (rememberMe.value && loginType.value === 'userid') {

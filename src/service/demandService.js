@@ -1,5 +1,5 @@
 import DemandModel from '../models/DemandModel.js';
-import axios from 'axios';
+
 class DemandService {
     /**
      * 提交人才需求
@@ -49,35 +49,5 @@ class DemandService {
         return await DemandModel.processDemand(id);
     }
 }
-const demandService = {
-    // 提交人才需求
-    submit(demandData) {
-      return axios.post('/api/demand/submit', demandData);
-    },
-    
-    // 获取我的需求列表
-    getMyDemands(params) {
-      return axios.get('/api/demand/myDemands', { params });
-    },
-    
-    // 获取待办任务列表
-    getTodoTasks(params) {
-      return axios.get('/api/demand/todoTasks', { params });
-    },
-    
-    // 获取已完成任务列表
-    getCompletedTasks(params) {
-      return axios.get('/api/demand/completedTasks', { params });
-    },
-    
-    // 获取需求详情
-    getDetail(id) {
-      return axios.get(`/api/demand/detail/${id}`);
-    },
-    
-    // 处理需求
-    process(id) {
-      return axios.post(`/api/demand/process/${id}`);
-    }
-  };
-export default DemandService;demandService; 
+
+export default DemandService;

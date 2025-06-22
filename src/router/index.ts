@@ -55,7 +55,7 @@ const router = createRouter({
       meta: { hideLayout: true }
     },
     {
-      path:'/',
+      path:'/login',
       name:'Login',
       component: LoginPage,
       meta: {hideLayout: true}

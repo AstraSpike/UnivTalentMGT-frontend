@@ -441,6 +441,16 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { 
+  submitDemand, 
+  getMyDemands, 
+  getTodoTasks, 
+  getCompletedTasks, 
+  getDemandDetail, 
+  processDemand 
+// 为解决找不到模块声明文件的问题，使用 @ts-ignore 临时忽略类型检查
+// @ts-ignore
+} from '../api/demand.js';
 
 // 定义需求岗位接口
 interface DemandPosition {
@@ -845,6 +855,76 @@ const filteredCompletedTasks = computed(() => {
     
     return true;
   });
+  const submitDemandHandler = async () => {
+  try {
+    const response = await submitDemand(demandForm);
+    console.log('需求提交成功', response.data);
+    // 可以在这里添加成功提示和重置表单等逻辑
+    resetDemandForm();
+  } catch (error) {
+    console.error('需求提交失败', error);
+    // 可以在这里添加失败提示逻辑
+  }
+};
+
+// 获取我的需求列表
+const fetchMyDemands = async () => {
+  try {
+    const response = await getMyDemands(myDemandsFilter);
+    myDemands.value = response.data;
+  } catch (error) {
+    console.error('获取我的需求列表失败', error);
+  }
+};
+
+// 获取待办任务列表
+const fetchTodoTasks = async () => {
+  try {
+    const response = await getTodoTasks(todoFilter);
+    todoTasks.value = response.data;
+  } catch (error) {
+    console.error('获取待办任务列表失败', error);
+  }
+};
+
+// 获取已完成任务列表
+const fetchCompletedTasks = async () => {
+  try {
+    const response = await getCompletedTasks(completedTasksFilter);
+    completedTasks.value = response.data;
+  } catch (error) {
+    console.error('获取已完成任务列表失败', error);
+  }
+};
+
+// 获取需求详情
+const showDemandDetail = async (demandId) => {
+  try {
+    const response = await getDemandDetail(demandId);
+    demandDetail.value = response.data;
+    showDetailModal.value = true;
+  } catch (error) {
+    console.error('获取需求详情失败', error);
+  }
+};
+
+// 处理需求
+const processDemandHandler = async (demandId) => {
+  try {
+    const response = await processDemand(demandId);
+    console.log('需求处理成功', response.data);
+    // 更新需求列表
+    fetchMyDemands();
+  } catch (error) {
+    console.error('需求处理失败', error);
+  }
+};
+
+onMounted(() => {
+  fetchMyDemands();
+  fetchTodoTasks();
+  fetchCompletedTasks();
+});
 });
 
 // 页面加载时执行

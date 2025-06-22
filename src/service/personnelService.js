@@ -1,9 +1,9 @@
-import PersonnelModel from '../models/PersonnelModel.js';
+import PersonnelModel from '../models/personnelModel.js';
 import ExcelJS from 'exceljs';
-import axios from 'axios';
+
 class PersonnelService {
     /**
-     * 获取干部教师列表np
+     * 获取干部教师列表
      * @param {Object} query - 查询参数
      */
     static async getPersonnelList(query) {
@@ -61,24 +61,5 @@ class PersonnelService {
         res.end();
     }
 }
-const personnelService = {
-    // 获取干部教师列表
-    getList(params) {
-      return axios.get('/api/personnel/list', { params });
-    },
-    
-    // 获取干部教师详情
-    getDetail(id) {
-      return axios.get(`/api/personnel/detail/${id}`);
-    },
-    
-    // 导出Excel
-    exportExcel(params) {
-      // 注意：导出文件通常需要处理Blob类型响应
-      return axios.get('/api/personnel/exportExcel', { 
-        params, 
-        responseType: 'blob' 
-      });
-    }
-  };
-export default PersonnelService;personnelService;    
+
+export default PersonnelService;
