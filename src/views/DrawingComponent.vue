@@ -1,3 +1,4 @@
+<!-- 绘画组件 -->
 <template>
   <div 
     class="drawing-overlay" 

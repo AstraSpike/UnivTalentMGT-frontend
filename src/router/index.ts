@@ -8,6 +8,8 @@ import department_communication from "../views/department_communication.vue";
 import training from "../views/training.vue";
 import userInfo from "../views/userInfo.vue";
 import LoginPage from '../views/LoginPage.vue';
+import changePassword from '../views/changePassword.vue';
+import changePhone from '../views/changePhone.vue';
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -56,6 +58,18 @@ const router = createRouter({
       path:'/',
       name:'Login',
       component: LoginPage,
+      meta: {hideLayout: true}
+    },
+    {
+      path:'/userInfo/changePassword',
+      name:'changePassword',
+      component: changePassword,
+      meta: {hideLayout: true}
+    },
+    {
+      path:'/userInfo/changePhone',
+      name:'changePhone',
+      component: changePhone,
       meta: {hideLayout: true}
     }
 ]

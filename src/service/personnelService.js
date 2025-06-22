@@ -37,6 +37,7 @@ class PersonnelService {
             { header: '职称', key: 'title', width: 20 },
             { header: '教学评分', key: 'teachingScore', width: 10 },
             { header: '科研评分', key: 'researchScore', width: 10 },
+            { header: '晋升概率', key: 'promotionChance', width: 10 },
             { header: '标签', key: 'tags', width: 20 }
         ];
 

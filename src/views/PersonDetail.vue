@@ -69,12 +69,24 @@ import { CircleClose } from '@element-plus/icons-vue'
 
 // 人员信息接口
 interface Person {
-  id: string;//工号
+  id:number;
+  jobid: string;//工号
   name: string;
   gender: string;
   age: number;
   department: string;
   position: string;
+  title:string;
+  entry_time:string;
+  degree:string;
+  university:string;
+  major:string;
+  email:string;
+  phone:string;
+  political_status:string;
+  native_place:string;
+  marital_status:string;
+  ethnicity:string;
 }
 
 // 状态管理
@@ -87,13 +99,25 @@ const error = ref('')
 // 判断是否为有效人员数据
 const isValidPerson = (data: any): data is Person => {
   return (
-    data &&
-    typeof data.id === 'string' &&
+    data && 
+    typeof data.id === 'number' &&
+    typeof data.jobid === 'string' &&
     typeof data.name === 'string' &&
     typeof data.gender === 'string' &&
     typeof data.age === 'number' &&
     typeof data.department === 'string' &&
-    typeof data.position === 'string'
+    typeof data.position === 'string' &&
+    typeof data.title === 'string' &&
+    typeof data.entry_time === 'string' &&
+    typeof data.degree === 'string' &&
+    typeof data.university === 'string' &&
+    typeof data.major === 'string' &&
+    typeof data.email === 'string' &&
+    typeof data.phone === 'string' &&
+    typeof data.political_status === 'string' &&
+    typeof data.native_place === 'string' &&
+    typeof data.marital_status === 'string' &&
+    typeof data.ethnicity === 'string'
   )
 }
 
@@ -104,11 +128,12 @@ const fetchPersonDetail = async () => {
   
   try {
     // 获取并验证路由参数
-    const idParam = route.params.id as string | undefined
+const idParam = (route.params.id as unknown) as number | undefined
     if (!idParam) throw new Error('缺少人员ID')
     
     // 转换为数字并验证
-    const id = parseInt(idParam, 10)
+// 由于 idParam 可能是 number 类型，直接赋值给 id，避免 parseInt 接收非字符串参数的问题
+const id = typeof idParam === 'number' ? idParam : typeof idParam === 'string' ? parseInt(idParam, 10) : NaN;
     if (isNaN(id)) throw new Error('无效的人员ID')
     
     // 获取数据

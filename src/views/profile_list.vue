@@ -55,6 +55,7 @@
 			</thead>
 			<tbody>
 			  <tr v-for="person in personnelList" :key="person.id">
+				<td>{{ person.jobid }}</td>
 				<td>{{ person.name }}</td>
 				<td>{{ person.gender }}</td>
 				<td>{{ person.age }}</td>
@@ -102,6 +103,7 @@
   // 1. 定义人员数据接口
   interface Person {
 	id: number;
+	jobid:string;
 	name: string;
 	gender: string;
 	age: number;

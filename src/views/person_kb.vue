@@ -62,7 +62,7 @@
 			</div>
 			<div class="detail-row">
 			  <div class="detail-label">入职时间</div>
-			  <div>{{ person.hireDate }}</div>
+			  <div>{{ person.entry_time }}</div>
 			</div>
 			<div class="detail-row">
 			  <div class="detail-label">学历</div>
@@ -108,6 +108,7 @@
 				  <th>职务</th>
 				  <th>职称</th>
 				  <th>学历</th>
+				  <th>晋升概率</th>
 				  <th>标签</th>
 				  <th>操作</th>
 				</tr>
@@ -121,6 +122,7 @@
 				  <td>{{ person.position }}</td>
 				  <td>{{ person.title }}</td>
 				  <td>{{ person.education }}</td>
+				  <td>{{ person.prochance}}</td>
 				  <td>
 					<span v-for="tag in person.tags" :key="tag" :class="'tag tag-' + tag">
 					  {{ tag }}
@@ -223,15 +225,17 @@
   // 定义人员数据类型
   interface Person {
 	id: number;
+	// jobid:string;
 	name: string;
 	department: string;
 	position: string;
 	title: string;
 	gender: string;
 	age: number;
-	hireDate: string;
+	entry_time: string;
 	education: string;
 	tags: string[];
+	prochance:number;
   }
   
   const isFullScreen = ref(false);
@@ -243,39 +247,45 @@
   const personnelList = ref<Person[]>([
 	{
 	  id: 1,
+	//   jobid:'1001',
 	  name: '张教授',
 	  department: '文学院',
 	  position: '教授',
 	  title: '教授',
 	  gender: '男',
 	  age: 45,
-	  hireDate: '2005-08-15',
+	  entry_time: '2005-08-15',
 	  education: '博士',
-	  tags: ['教学名师', '科研骨干', '创新能手']
+	  tags: ['教学名师', '科研骨干', '创新能手'],
+	  prochance: 0.8
 	},
 	{
 	  id: 2,
+	//   jobid:'1002',
 	  name: '李副教授',
 	  department: '理学院',
 	  position: '教师',
 	  title: '副教授',
 	  gender: '女',
 	  age: 38,
-	  hireDate: '2008-09-10',
+	  entry_time: '2008-09-10',
 	  education: '博士',
-	  tags: ['科研骨干']
+	  tags: ['科研骨干'],
+	  prochance: 0.7
 	},
 	{
 	  id: 3,
+	//   jobid:'1003',
 	  name: '王讲师',
 	  department: '工学院',
 	  position: '教师',
 	  title: '讲师',
 	  gender: '男',
 	  age: 30,
-	  hireDate: '2015-07-01',
+	  entry_time: '2015-07-01',
 	  education: '硕士',
-	  tags: ['教学创新能手', '创新技术先锋']
+	  tags: ['教学创新能手', '创新技术先锋'],
+	  prochance: 0.6
 	}
   ]);
   

@@ -39,7 +39,7 @@ class DemandModel {
 
     /**
      * 获取需求详情
-     * @param {string} id - 需求 ID
+     * @param {number} id - 需求 ID
      */
     static async getDemandDetail(id) {
         // 模拟从数据库查询
@@ -48,7 +48,7 @@ class DemandModel {
 
     /**
      * 处理需求
-     * @param {string} id - 需求 ID
+     * @param {number} id - 需求 ID
      */
     static async processDemand(id) {
         // 模拟更新数据库

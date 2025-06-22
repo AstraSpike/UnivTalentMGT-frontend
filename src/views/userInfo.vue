@@ -96,7 +96,7 @@
           </div>
           <div class="info-item">
             <div class="item-label">入职日期</div>
-            <div class="item-value">{{ user.detail.hireDate }}</div>
+            <div class="item-value">{{ user.detail.entry_time }}</div>
           </div>
         </div>
       </div>
@@ -117,20 +117,6 @@
               <i class="fa fa-angle-right"></i>
             </div>
           </div>
-          
-          <div class="security-item" @click="handleViewVerification">
-            <div class="item-icon">
-              <i class="fa fa-shield"></i>
-            </div>
-            <div class="item-info">
-              <div class="item-title">实名认证</div>
-              <div class="item-subtitle" :class="{'text-success': user.security.verified}">{{ user.security.verified ? '已认证' : '未认证' }}</div>
-            </div>
-            <div class="item-action">
-              <i class="fa fa-angle-right"></i>
-            </div>
-          </div>
-          
           <div class="security-item" @click="handleChangePhone">
             <div class="item-icon">
               <i class="fa fa-mobile"></i>
@@ -138,36 +124,6 @@
             <div class="item-info">
               <div class="item-title">手机号</div>
               <div class="item-subtitle">{{ user.security.phoneVerified ? '已绑定: ' + user.security.phone : '未绑定' }}</div>
-            </div>
-            <div class="item-action">
-              <i class="fa fa-angle-right"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 账户管理 -->
-      <div class="info-section">
-        <h3 class="section-title">账户管理</h3>
-        <div class="security-items">
-          <div class="security-item" @click="handleViewLoginHistory">
-            <div class="item-icon">
-              <i class="fa fa-history"></i>
-            </div>
-            <div class="item-info">
-              <div class="item-title">登录记录</div>
-            </div>
-            <div class="item-action">
-              <i class="fa fa-angle-right"></i>
-            </div>
-          </div>
-          
-          <div class="security-item" @click="handleNotificationSettings">
-            <div class="item-icon">
-              <i class="fa fa-bell"></i>
-            </div>
-            <div class="item-info">
-              <div class="item-title">通知设置</div>
             </div>
             <div class="item-action">
               <i class="fa fa-angle-right"></i>
@@ -197,7 +153,7 @@ interface UserDetail {
   politicalStatus: string;
   title: string;
   education: string;
-  hireDate: string;
+  entry_time: string;
 }
 
 // 定义用户统计信息接口
@@ -216,8 +172,9 @@ interface UserSecurity {
 }
 
 // 定义完整用户信息接口
-interface User {
-  id: string;
+interface user {
+  id: number;
+  jobid:string;
   name: string;
   avatar: string;
   department: string;
@@ -234,8 +191,9 @@ interface User {
 const router = useRouter();
 
 // 用户数据
-const user = ref<User>({
-  id: '201800123',
+const user = ref<user>({
+  id: 0o1,
+  jobid: '201800123',
   name: '张教授',
   avatar: 'https://picsum.photos/200/200?random=1',
   department: '计算机科学系',
@@ -249,7 +207,7 @@ const user = ref<User>({
     politicalStatus: '中共党员',
     title: '教授',
     education: '博士',
-    hireDate: '2012-09-01'
+    entry_time: '2012-09-01'
   },
   stats: {
     courses: 24,
@@ -270,33 +228,17 @@ const handleChangePassword = () => {
   router.push('/userInfo/changePassword');
 };
 
-const handleViewVerification = () => {
-  console.log('查看实名认证详情');
-  // 此处可添加打开认证详情页的逻辑
-  router.push('/userInfo/verification');
-};
-
 const handleChangePhone = () => {
   console.log('修改手机号');
   // 此处可添加打开手机号修改页面的逻辑
   router.push('/userInfo/changePhone');
 };
 
-const handleViewLoginHistory = () => {
-  console.log('查看登录记录');
-  router.push('/userInfo/loginHistory'); // 导航到登录记录页面
-};
-
-const handleNotificationSettings = () => {
-  console.log('通知设置');
-  router.push('/userInfo/notifications'); // 导航到通知设置页面
-};
-
 const handleLogout = () => {
   if (confirm('确定要退出登录吗？')) {
     console.log('执行退出登录');
     localStorage.removeItem('token'); // 清除登录凭证
-    router.push('/login'); // 导航到登录页
+    router.push('/'); // 导航到登录页
   }
 };
 
