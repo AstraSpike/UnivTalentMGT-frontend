@@ -255,38 +255,36 @@ onUnmounted(() => {
 
 // 登录处理
 const handleLogin = async () => {
-  if (!validateForm()) return;
-  isLoading.value = true;
-  loginError.value = '';
+  if (!validateForm()) {
+    return;
+  }
+
   try {
-      const loginData = {
-        username: form.username,
-        password: form.password
-      };
-      const response = await AuthModel.login(loginData);
-      
-      if (response.success) {
-          // 存储认证信息
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('user', JSON.stringify(response.user));
-          
-          // 如果勾选了记住我，则设置长期存储
-          if (rememberMe.value && loginType.value === 'userid') {
-              localStorage.setItem('rememberMe', 'true');
-          }
-          
-          // 登录成功后跳转到主页
-          router.push('/home');
-      } else {
-          throw new Error(loginType.value === 'userid' 
-              ? '用户名或密码不正确' 
-              : '邮箱或验证码不正确');
-      }
-  } catch (error: any) {
-      // 处理登录错误
-      loginError.value = error.message || '登录失败，请重试';
+    isLoading.value = true;
+    loginError.value = '';
+
+    const data = await AuthModel.login(form);
+    console.log('登录成功，数据:', data);
+    
+    // 存储token和用户信息
+    sessionStorage.setItem("token", data.token);
+    const userInfo = {
+      userId: data.userId,
+      username: data.username
+    };
+    localStorage.setItem("user-info", JSON.stringify(userInfo));
+    
+    // 获取返回URL（如果有）
+    const returnUrl = localStorage.getItem("return-url") || '/';
+    localStorage.removeItem("return-url"); // 清除返回URL
+    
+    // 跳转到目标页面
+    router.push("/home")
+  } catch (error) {
+    console.error('登录失败:', error);
+    loginError.value = '用户名或密码错误';
   } finally {
-      isLoading.value = false;
+    isLoading.value = false;
   }
 };
 </script>
