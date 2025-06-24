@@ -44,12 +44,12 @@
                           <i :class="loginType === 'userid' ? 'fa fa-user' : 'fa fa-envelope'"></i>
                           <input 
                               type="text" 
-                              v-model="form.username" 
+                              v-model="form.identifier" 
                               :placeholder="loginType === 'userid' ? '请输入用户名或工号' : '请输入邮箱'"
                               required
                           >
                       </div>
-                      <p class="error-message" v-if="errors.username">{{ errors.username }}</p>
+                      <p class="error-message" v-if="errors.identifier">{{ errors.identifier }}</p>
                   </div>
                   
                   <!-- 密码/验证码输入 -->
@@ -58,7 +58,7 @@
                           <i :class="loginType === 'userid' ? 'fa fa-lock' : 'fa fa-key'"></i>
                           <input 
                               :type="loginType === 'userid' && passwordVisible ? 'text' : 'password'" 
-                              v-model="form.password" 
+                              v-model="form.credential" 
                               :placeholder="loginType === 'userid' ? '请输入密码' : '请输入验证码'"
                               required
                           >
@@ -84,7 +84,7 @@
                               <i :class="passwordVisible ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
                           </button>
                       </div>
-                      <p class="error-message" v-if="errors.password">{{ errors.password }}</p>
+                      <p class="error-message" v-if="errors.credential">{{ errors.credential }}</p>
                   </div>
                   
                   <!-- 忘记密码 -->
@@ -128,14 +128,14 @@ const loginType = ref('userid');
 
 // 表单数据
 const form = reactive({
-  username: '',  // 可以是工号或邮箱
-  password: ''   // 可以是密码或验证码
+  identifier: '',  // 可以是工号或邮箱
+  credential: ''   // 可以是密码或验证码
 });
 
 // 表单验证错误
 const errors = reactive({
-  username: '',
-  password: ''
+  identifier: '',
+  credential: ''
 });
 
 // 状态管理
@@ -157,31 +157,31 @@ const validateForm = () => {
   let isValid = true;
   
   // 重置错误
-  errors.username = '';
-  errors.password = '';
+  errors.identifier = '';
+  errors.credential = '';
   
   // 验证用户名/邮箱
-  if (!form.username.trim()) {
-      errors.username = loginType.value === 'userid' 
+  if (!form.identifier.trim()) {
+      errors.identifier = loginType.value === 'userid' 
           ? '请输入工号' 
           : '请输入邮箱';
       isValid = false;
-  } else if (loginType.value === 'email' && !isValidEmail(form.username)) {
-      errors.username = '请输入有效的邮箱地址';
+  } else if (loginType.value === 'email' && !isValidEmail(form.identifier)) {
+      errors.identifier = '请输入有效的邮箱地址';
       isValid = false;
   }
   
   // 验证密码/验证码
-  if (!form.password) {
-      errors.password = loginType.value === 'userid' 
+  if (!form.credential) {
+      errors.credential = loginType.value === 'userid' 
           ? '请输入密码' 
           : '请输入验证码';
       isValid = false;
-  } else if (loginType.value === 'userid' && form.password.length < 6) {
-      errors.password = '密码长度至少为6个字符';
+  } else if (loginType.value === 'userid' && form.credential.length < 6) {
+      errors.credential = '密码长度至少为6个字符';
       isValid = false;
-  } else if (loginType.value === 'email' && !/^\d{6}$/.test(form.password)) {
-      errors.password = '验证码格式不正确';
+  } else if (loginType.value === 'email' && !/^\d{6}$/.test(form.credential)) {
+      errors.credential = '验证码格式不正确';
       isValid = false;
   }
   
@@ -197,13 +197,13 @@ const isValidEmail = (email: string) => {
 // 获取验证码
 const getVerificationCode = async () => {
   // 验证邮箱
-  if (!form.username.trim()) {
-      errors.username = '请输入邮箱';
+  if (!form.identifier.trim()) {
+      errors.identifier = '请输入邮箱';
       return;
   }
   
-  if (!isValidEmail(form.username)) {
-      errors.username = '请输入有效的邮箱地址';
+  if (!isValidEmail(form.identifier)) {
+      errors.identifier = '请输入有效的邮箱地址';
       return;
   }
   
@@ -215,7 +215,7 @@ const getVerificationCode = async () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // 模拟发送成功
-      console.log(`验证码已发送至邮箱: ${form.username}`);
+      console.log(`验证码已发送至邮箱: ${form.identifier}`);
       
       // 开始倒计时
       startCountdown();
@@ -256,12 +256,14 @@ onUnmounted(() => {
 // 登录处理
 const handleLogin = async () => {
   if (!validateForm()) return;
+  
   isLoading.value = true;
   loginError.value = '';
+  
   try {
       const loginData = {
-        username: form.username,
-        password: form.password
+        identifier: form.identifier,
+        credential: form.credential
       };
       const response = await AuthModel.login(loginData);
       

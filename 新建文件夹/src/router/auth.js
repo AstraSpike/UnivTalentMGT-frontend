@@ -4,9 +4,9 @@ import AuthService from '../services/authService.js';
 
 /**
  * 用户登录
- * @route POST /users/login
+ * @route POST /api/login
  */
-router.post('/users/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const result = await AuthService.login(req.body);
         res.json(result);

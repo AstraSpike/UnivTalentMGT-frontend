@@ -28,15 +28,15 @@
 			<option>讲师</option>
 		  </select>
 		</div>
-		<button class="btn" @click="fetchTags">查询</button>
+		<button class="btn">查询</button>
 		<button class="btn btn-secondary">重置</button>
 	  </div>
-  
+	  
 	  <div class="kanban-view-options">
 		<div class="view-option" :class="{ active: currentView === 'card' }" @click="changeKanbanView('card')">卡片视图</div>
 		<div class="view-option" :class="{ active: currentView === 'list' }" @click="changeKanbanView('list')">列表视图</div>
 	  </div>
-  
+	  
 	  <!-- 卡片视图 -->
 	  <div v-if="currentView === 'card'" id="card-view" class="personnel-kanban">
 		<div 
@@ -89,7 +89,7 @@
 		  </div>
 		</div>
 	  </div>
-  
+	  
 	  <!-- 列表视图 -->
 	  <div v-if="currentView === 'list'" id="list-view" class="page">
 		<div class="card">
@@ -204,7 +204,7 @@
 		  <button class="btn btn-secondary">保存筛选方案</button>
 		</div>
 	  </div>
-  
+	  
 	  <!-- 会议场景适配 -->
 	  <div class="card">
 		<div class="card-title">会议场景适配</div>
@@ -221,7 +221,6 @@
   import { useRouter } from 'vue-router';
   import { RouterLink } from 'vue-router';
   import * as echarts from 'echarts'; // 导入 ECharts
-  import axios from 'axios';
   
   // 定义人员数据类型
   interface Person {
@@ -236,7 +235,7 @@
 	entry_time: string;
 	education: string;
 	tags: string[];
-	prochance: number;
+	prochance:number;
   }
   
   const isFullScreen = ref(false);
@@ -248,7 +247,7 @@
   const personnelList = ref<Person[]>([
 	{
 	  id: 1,
-	  //   jobid:'1001',
+	//   jobid:'1001',
 	  name: '张教授',
 	  department: '文学院',
 	  position: '教授',
@@ -262,7 +261,7 @@
 	},
 	{
 	  id: 2,
-	  //   jobid:'1002',
+	//   jobid:'1002',
 	  name: '李副教授',
 	  department: '理学院',
 	  position: '教师',
@@ -276,7 +275,7 @@
 	},
 	{
 	  id: 3,
-	  //   jobid:'1003',
+	//   jobid:'1003',
 	  name: '王讲师',
 	  department: '工学院',
 	  position: '教师',
@@ -321,25 +320,26 @@
   // 初始化列表图表
   const initListChart = () => {
 	if (!listChart.value) return;
-	const chart = echarts.init(listChart.value);
-  
-	// 这里可以添加图表配置
-	chart.setOption({
-	  title: {
-		text: '人员统计图表'
-	  },
-	  tooltip: {},
-	  xAxis: {
-		data: ['教学能力', '科研能力', '管理能力', '创新能力']
-	  },
-	  yAxis: {},
-	  series: [{
-		name: '能力评分',
-		type: 'bar',
-		data: [85, 90, 75, 80]
-	  }]
-	});
-  };
+	  const chart = echarts.init(listChart.value);
+
+
+	  // 这里可以添加图表配置
+	  chart.setOption({
+		title: {
+		  text: '人员统计图表'
+		},
+		tooltip: {},
+		xAxis: {
+		  data: ['教学能力', '科研能力', '管理能力', '创新能力']
+		},
+		yAxis: {},
+		series: [{
+		  name: '能力评分',
+		  type: 'bar',
+		  data: [85, 90, 75, 80]
+		}]
+	  });
+	};
   
   // 查看详情
   const showProfileDetail = (person: Person) => {
@@ -353,122 +353,90 @@
 	// 这里可以添加实际的导出逻辑
   };
   
-  // 调用API获取标签
-  const fetchTags = async () => {
-	try {
-	  const staffId = 'S001';
-	  const capabilities = {
-		teaching: 4.5,
-		research: 4.8,
-		management: 3.9,
-		innovation: 4.2
-	  };
-	  const additionalInfo = {
-		yearsOfExperience: 10,
-		educationLevel: 'PhD'
-	  };
-  
-	  const response = await axios.post('/api/assessment/tags', {
-		staffId,
-		capabilities,
-		additionalInfo
-	  });
-  
-	  if (response.data.code === 200) {
-		const newTags = response.data.data.tags;
-		// 假设更新第一个人员的标签
-		console.log("获取到的标签:", newTags);
-		personnelList.value[0].tags = newTags;
-	  }
-	} catch (error) {
-	  console.error('获取标签失败:', error);
-	}
-  };
-  
   onMounted(() => {
 	if (currentView.value === 'list') {
 	  initListChart();
 	}
   });
   </script>
-  
-  <style src="../components/style.css" scoped>
+
+<style src="../components/style.css" scoped>
   /* 可以添加一些基本的样式 */
   .view-option {
-	cursor: pointer;
-	padding: 8px 16px;
-	border: 1px solid #ccc;
-	margin-right: 8px;
+    cursor: pointer;
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    margin-right: 8px;
   }
   .view-option.active {
-	background-color: #007bff;
-	color: white;
+    background-color: #007bff;
+    color: white;
   }
   table {
-	width: 100%;
-	border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
   }
   th, td {
-	border: 1px solid #ccc;
-	padding: 8px;
-	text-align: left;
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
   }
-  /* 添加全屏状态下的内容样式 */
-  #personnel-kanban-page.full-screen {
-	padding: 0;
-	margin: 0;
-	height: 100vh;
-	overflow: hidden;
-  }
-  /* 全屏时卡片占满屏幕 */
-  .full-screen .card {
-	margin: 0;
-	border-radius: 0;
-	height: 100vh;
-  }
-  .personnel-tags {
-	margin-top: 10px;
-	display: flex;
-	flex-wrap: wrap;
-  }
-  
-  .tag {
-	display: inline-block;
-	padding: 2px 8px;
-	margin-right: 6px;
-	margin-bottom: 6px;
-	border-radius: 12px;
-	font-size: 12px;
-	color: white;
-	background-color: #666;
-  }
-  
-  /* 确保颜色类名与数据中的标签匹配 */
-  .tag-教学名师 { background-color: #1890ff; }
-  .tag-科研骨干 { background-color: #52c41a; }
-  .tag-创新能手 { background-color: #faad14; }
-  .tag-优秀管理者 { background-color: #722ed1; }
-  
-  .tag-teaching {
-	background-color: #1890ff;
-  }
-  
-  .tag-research {
-	background-color: #52c41a;
-  }
-  
-  .tag-management {
-	background-color: #722ed1;
-  }
-  
-  .tag-innovation {
-	background-color: #faad14;
-  }
-  
-  /* 悬停效果 */
-  .tag:hover {
-	opacity: 0.8;
-	transform: translateY(-1px);
-	transition: all 0.2s ease;
-  }
-  </style>
+/* 添加全屏状态下的内容样式 */
+#personnel-kanban-page.full-screen {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+/* 全屏时卡片占满屏幕 */
+.full-screen .card {
+  margin: 0;
+  border-radius: 0;
+  height: 100vh;
+}
+.personnel-tags {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tag {
+    display: inline-block;
+    padding: 2px 8px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: white;
+    background-color: #666;
+}
+
+/* 确保颜色类名与数据中的标签匹配 */
+.tag-教学名师 { background-color: #1890ff; }
+.tag-科研骨干 { background-color: #52c41a; }
+.tag-创新能手 { background-color: #faad14; }
+.tag-优秀管理者 { background-color: #722ed1; }
+
+.tag-teaching {
+    background-color: #1890ff;
+}
+
+.tag-research {
+    background-color: #52c41a;
+}
+
+.tag-management {
+    background-color: #722ed1;
+}
+
+.tag-innovation {
+    background-color: #faad14;
+}
+
+/* 悬停效果 */
+.tag:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+</style>
