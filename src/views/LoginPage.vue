@@ -74,7 +74,7 @@
           <!-- 忘记密码 -->
           <div class="form-options">
             <div class="placeholder" v-show="loginType !== 'userid'"></div>
-            <a href="#" class="forgot-password" v-show="isLoginMode && loginType === 'userid'">忘记密码?</a>
+            <a href="#" class="forgot-password" v-show="isLoginMode && loginType === 'userid'" @click.prevent="$router.push('/forgot-password')">忘记密码?</a>
           </div>
 
           <!-- 登录/注册按钮 -->
@@ -218,11 +218,7 @@ const handleLogin = async () => {
       username: data.username
     };
     localStorage.setItem("user-info", JSON.stringify(userInfo));
-
-    // 获取返回URL（如果有）
-    const returnUrl = localStorage.getItem("return-url") || '/';
-    localStorage.removeItem("return-url"); // 清除返回URL
-
+    
     // 跳转到目标页面
     router.push("/home")
   } catch (error) {

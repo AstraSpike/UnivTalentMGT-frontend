@@ -11,7 +11,8 @@ import LoginPage from '../views/LoginPage.vue';
 import changePassword from '../views/changePassword.vue';
 import changePhone from '../views/changePhone.vue';
 import TrainingDetails from '../views/TrainingDetails.vue';
-import PersonDetail from '../views/PersonDetail.vue'
+import PersonDetail from '../views/PersonDetail.vue';
+import ForgotPassword from '../views/ForgotPassword.vue'; 
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -45,9 +46,12 @@ const router = createRouter({
       component: talent,
     },
     {
-      path:"/department_communication",
+      path:"/login/department_communication",
       name:"department_communication",
       component: department_communication,
+        props: (route) => ({ 
+        id: route.params.id,
+      })
     },
     {
       path:"/training",
@@ -93,6 +97,12 @@ const router = createRouter({
         id: route.params.id,
         baseInfo: route.params.baseInfo 
       })
+    },
+    {
+      path:'/forgot-password',
+      name:'ForgotPassword',
+      component: ForgotPassword,
+      meta: {hideLayout: true}
     }
 ]
 });

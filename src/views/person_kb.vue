@@ -115,7 +115,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="person in filteredPersonnel" :key="person.id">
+                            <tr v-for="person in paginatedPersonnel" :key="person.id">
                                 <td>{{ person.name }}</td>
                                 <td>{{ person.gender === 'male' ? '男' : '女' }}</td>
                                 <td>{{ person.age }}</td>
@@ -136,19 +136,23 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="pagination">
-                    <div class="page-item" :class="{ active: currentPage === 1 }" @click="currentPage = 1">1</div>
-                    <div class="page-item" :class="{ active: currentPage === 2 }" @click="currentPage = 2">2</div>
-                    <div class="page-item" :class="{ active: currentPage === 3 }" @click="currentPage = 3">3</div>
-                    <div class="page-item">...</div>
-                    <div class="page-item" :class="{ active: currentPage === totalPages }" @click="currentPage = totalPages">{{ totalPages }}</div>
-                </div>
+
             </div>
         </div>
-
-        <div v-else-if="currentView === 'list' && personnelList.length === 0" class="empty-state">
+<div class="pagination">
+  <div 
+    class="page-item" 
+    v-for="page in Math.ceil(totalItems / pageSize)"
+    :key="page"
+    :class="{ active: currentPage === page }"
+    @click="currentPage = page"
+  >
+    {{ page }}
+  </div>
+</div>
+        <!-- <div v-else-if="currentView === 'list' && personnelList.length === 0" class="empty-state">
             <p>暂无人员数据</p>
-        </div>
+        </div> -->
 
         <!--筛查选项设置-->
         <div class="card">
@@ -196,11 +200,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch, computed,onUnmounted } from 'vue';
+import { ref, onMounted, watch, computed,onUnmounted, provide } from 'vue';
 import { useRouter } from 'vue-router';
 import * as echarts from 'echarts';
 import axios from 'axios';
-
+import personnelService from '../service/personnelService' 
 // 定义人员数据类型
 interface Person {
     id: number;
@@ -398,21 +402,24 @@ const formatDate = (dateStr: string) => {
 const fetchPersonnel = async () => {
     loading.value = true;
     errorMessage.value = '';
-    
+    // personnelService.getPersonnelList();
     try {
         const response = await axios.get('/basic');
-        
         if (response.status === 200) {
             personnelList.value = response.data.map((person: Person) => ({
                 ...person,
                 // 将entryTime转换为更友好的格式
                 entryTime: formatDate(person.entryTime),
                 // 确保prochance存在
-                prochance: person.prochance || 0
+                prochance: person.prochance || 0,
             }));
         } else {
             errorMessage.value = `请求失败 (${response.status}): ${response.statusText}`;
         }
+        personnelList.value = response.data,
+        console.log('人员数据:', personnelList.value);
+        totalItems.value = response.data.length,
+        errorMessage.value = '';
     } catch (error: any) {
         console.error('获取人员数据失败:', error);
         errorMessage.value = `请求错误: ${error.message}`;
@@ -466,9 +473,32 @@ const resetFilters = () => {
 const applyFilters = () => {
     currentPage.value = 1; // 重置页码
 };
-
+const pageSize = ref(10);
+const totalItems = ref(0);
+const paginatedPersonnel = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredPersonnel.value.slice(start, end);
+});
+// 为 basicData 添加类型定义
+interface BasicPersonInfo {
+    name: string;
+    gender: 'male' | 'female';
+    age: number;
+    department: string;
+    position: string;
+    title: string;
+    entryTime: string;
+    university: string;
+    major: string;
+    phone: string;
+    email: string;
+}
+const basicData = ref<BasicPersonInfo[]>([]);
 onMounted(() => {
     fetchPersonnel();
+    provide('basicData', basicData.value);
+    console.log('basicData:', basicData.value);
     if (currentView.value === 'list') {
         initListChart();
     }
@@ -478,16 +508,6 @@ onMounted(() => {
         if (currentView.value === 'list' && listChart.value) {
             const chart = echarts.init(listChart.value);
             chart.resize();
-        }
-    });
-});
-
-// 清理
-onUnmounted(() => {
-    window.removeEventListener('resize', () => {
-        if (listChart.value) {
-            const chart = echarts.init(listChart.value);
-            chart.dispose();
         }
     });
 });
@@ -572,4 +592,50 @@ onUnmounted(() => {
 	transform: translateY(-1px);
 	transition: all 0.2s ease;
   }
+#personnel-kanban-page {
+  width: calc(100% - 240px); /* 减去侧边栏宽度 */
+  margin-left: 240px; /* 侧边栏宽度 */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.personnel-kanban {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 确保表格宽度填满容器 */
+.table-container table {
+  width: 100%;
+}
+
+/* 调整筛选栏布局 */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 确保卡片视图居中 */
+#card-view {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* 列表视图表格居中 */
+.table-container {
+  overflow-x: auto;
+  margin: 0 auto;
+}
   </style>

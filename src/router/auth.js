@@ -26,5 +26,28 @@ router.post('/users/register', async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
-
+/**
+ * 忘记密码
+ * @route POST /auth/reset-password
+ */
+router.post('/auth/reset-password', async (req, res) => {
+    try {
+        const result = await AuthService.resetPassword(req.body);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+/**
+ * 忘记密码
+ * @route POST /auth/send-reset-code
+ */
+router.post('/auth/send-reset-code', async (req, res) => {
+    try {
+        const result = await AuthService.sendResetPasswordCode(req.body);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
 export default router;

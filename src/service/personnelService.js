@@ -6,9 +6,15 @@ class PersonnelService {
      * 获取干部教师列表
      * @param {Object} query - 查询参数
      */
-    static async getPersonnelList(query) {
-        return await PersonnelModel.getPersonnelList(query);
-    }
+    // static async getPersonnelList(query) {
+    //     // 添加分页参数
+    //     const { page = 1, pageSize = 10 } = query;
+    //     return await PersonnelModel.getPersonnelList({
+    //         ...query,
+    //         page,
+    //         pageSize
+    //     });
+    // }
 
     /**
      * 获取干部教师详情

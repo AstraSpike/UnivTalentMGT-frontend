@@ -16,4 +16,14 @@ export const getPersonnelBasic = async () => {
     throw error;
   }
 };
-export function getList(): Promise<any>;
+export const getPersonnelList = async (query) => {
+  try {
+    const response = await axios.get(`/basic`, {
+      params: query
+    });
+    return response.data;
+  } catch (error) {
+    console.error('获取人员列表失败:', error);
+    throw error;
+  }
+};

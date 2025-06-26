@@ -35,6 +35,12 @@
         <div class="info-row">
           <span class="label">姓名：</span>
           <span class="value">{{ baseInfo?.name?? '-' }}</span>
+          				  <button 
+					class="detail-link" 
+					@click="fetchAndShowScores()"
+				  >
+					查看评分
+				  </button>
         </div>
         <div class="info-row">
           <span class="label">性别：</span>
@@ -245,7 +251,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import PersonnelService from '../service/personnelService.js';
 import { CircleClose } from '@element-plus/icons-vue';
-
+import axios from 'axios';
 // 人员信息接口 - 调整id类型为string或number
 interface Person {
   id: string | number;
@@ -298,6 +304,10 @@ interface Person {
   nativePlace?: string;
   maritalStatus?: string;
   ethnicity?: string;
+  detailInfo?: any;
+    // 添加以下两个属性
+    research?: number;
+    teaching?: number;
 }
 
 // 状态管理
@@ -399,22 +409,18 @@ if (Array.isArray(idParam)) {
   id = idParam;
 }
     }
-
     // 检查ID是否有效
     if (!id) throw new Error('无效的人员ID');
-
     // 获取数据
     const res = await PersonnelService.getPersonnelDetail(id);
     console.log('接口返回的数据:', res);
 
     // 这里需要根据实际情况调整，如果接口返回的数据是 { success: true, message: '...', data: {...} } 结构
     const actualData = res.data || res;
-
     // 验证数据结构
     if (!isValidPerson(actualData)) {
       throw new Error('获取的数据格式不正确');
     }
-
     personInfo.value = actualData;
     console.log('人员详情:', personInfo.value);
   } catch (err: any) {
@@ -441,7 +447,33 @@ const goBack = () => {
 const retry = () => {
   fetchPersonDetail();
 };
-
+ // 修改 fetchAndShowScores 方法，使用 idParam 获取分析数据
+    const fetchAndShowScores = async () => {
+        try {
+            const idParam = route.params.id;
+            let id: string | number;
+            if (typeof idParam === 'string') {
+                const numId = parseInt(idParam, 10);
+                id = isNaN(numId) ? idParam : numId;
+            } else if (Array.isArray(idParam)) {
+                const firstId = idParam[0];
+                id = typeof firstId === 'string' ? (isNaN(parseInt(firstId, 10)) ? firstId : parseInt(firstId, 10)) : firstId;
+            } else {
+                id = idParam;
+            }
+            const analyzeResponse = await axios.get(`/analyze/${id}`);
+            if (analyzeResponse.data.code === 200) {
+                const analysisData = analyzeResponse.data.data;
+                if (personInfo.value) {
+                    personInfo.value.research = analysisData.dimensionScores.research;
+                    personInfo.value.teaching = analysisData.dimensionScores.teaching;
+                    alert('分析数据获取成功,教学评分为:' + personInfo.value.teaching + ',科研评分为:' + personInfo.value.research);
+                }
+            }
+        } catch (error) {
+            console.error(`获取人员分析数据失败`, error);
+        }
+    };
 
 onMounted(() => {
     const basicInfo = route.query.basicInfo ? JSON.parse(route.query.basicInfo as string) : null;

@@ -55,31 +55,30 @@
 			</thead>
 			<tbody>
 			  <tr v-for="person in personnelList" :key="person.id">
-				<td>{{ person.jobid }}</td>
 				<td>{{ person.name }}</td>
 				<td>{{ person.gender }}</td>
 				<td>{{ person.age }}</td>
 				<td>{{ person.department }}</td>
 				<td>{{ person.title }}</td>
-				<td>{{ person.teachingScore }}</td>
-				<td>{{ person.researchScore }}</td>
+				<td>{{ person.teaching }}</td>
+				<td>{{ person.research }}</td>
 				<td>
 				  <span 
 					class="tag" 
-					:class="'tag-' + tag.toLowerCase().replace(/\s+/g, '-')"
+					:class="'tag-' + tag.tagName.toLowerCase().replace(/\s+/g, '-')"
 					v-for="tag in person.tags" 
-					:key="tag"
+					:key="tag.id"
 				  >
-					{{ tag }}
+					{{ tag.tagName }}
 				  </span>
 				</td>
 				<td>
-				  <RouterLink 
-					:to="`/person/detail/${person.id}`"
-					class="detail-link"
+				  <button 
+					class="detail-link" 
+					@click="fetchAndShowScores(person)"
 				  >
-					查看详情
-				  </RouterLink>
+					查看评分
+				  </button>
 				</td>
 			  </tr>
 			</tbody>
@@ -99,20 +98,40 @@
   <script lang="ts" setup name="profile-list">
   import { ref, onMounted,computed } from 'vue';
   import { RouterLink } from 'vue-router';
-  
+  import axios from 'axios';
   // 1. 定义人员数据接口
   interface Person {
-	id: number;
-	jobid:string;
-	name: string;
-	gender: string;
-	age: number;
-	department: string;
-	title: string;
-	teachingScore: number;
-	researchScore: number;
-	tags: string[];
-  }
+    id: number;
+    name: string;
+    gender: 'male' | 'female';
+    age: number;
+    position: string;
+    title: string;
+    department: string;
+    entryTime: string;
+    education: string;
+    degree: string;
+    university: string;
+    major: string;
+    phone: string;
+    email: string;
+    politicalStatus: string;
+    nativePlace: string;
+    maritalStatus: string;
+    ethnicity: string;
+    tags: {
+        id: number;
+        tagName: string;
+        tagType: string;
+        createTime: string;
+        updateTime: string;
+    }[];
+    prochance?: number;
+    detailInfo?: any;
+    // 添加以下两个属性
+    research?: number;
+    teaching?: number;
+}
   
   // 2. 定义API响应接口
   interface PersonnelResponse {
@@ -135,6 +154,7 @@
   // 4. 导入并声明人员服务模块
 // 为了解决找不到模块声明文件的问题，显式指定导入模块的类型为 any
 import personnelService from '../service/personnelService.js';
+import { number } from 'echarts';
   // 确保TypeScript知道personnelService的结构
 //   declare module '../service/personnelService.js' {
 // 	export function getList(params: PersonnelParams): Promise<{ data: PersonnelResponse }>;
@@ -150,7 +170,17 @@ import personnelService from '../service/personnelService.js';
   const currentPage = ref(1);
   const pageSize = ref(10);
   const total = ref(0);
-  
+  interface personnelAnalysisData {
+    stuffId: number;
+    // 这里根据实际返回的数据结构添加字段
+    overallScore: number;
+	dimensionScores: Array<{
+		innovation: number;
+		management: number;
+		research: number;
+		teaching: number;
+	}>;
+}
   // 计算总页数
   const totalPages = computed(() => Math.ceil(total.value / pageSize.value));
   
@@ -166,19 +196,63 @@ import personnelService from '../service/personnelService.js';
 		page: currentPage.value,
 		pageSize: pageSize.value
 	  };
-	  
-// 由于报错提示应有 0 个参数，但获得 1 个，推测 getList 方法不需要参数
-// 这里暂时移除 params 参数，若实际业务需要，请重新调整
-const response = await personnelService.getList();
+	  const response = await personnelService.getPersonnelList(params);
 	  personnelList.value = response.data.personnelList;
 	  total.value = response.data.total;
+  
+	  // 为每个人员获取分析数据并赋值
+	  for (const person of personnelList.value) {
+	      try {
+	          const analyzeResponse = await axios.get(`/analyze/${person.id}`);
+	          if (analyzeResponse.data.code === 200) {
+	              const analysisData = analyzeResponse.data.data;
+	              person.research = analysisData.dimensionScores.research;
+	              person.teaching = analysisData.dimensionScores.teaching;
+	          }
+	      } catch (error) {
+	          console.error(`获取人员 ${person.id} 分析数据失败`, error);
+	      }
+	  }
 	} catch (error: any) {
 	  console.error('获取干部教师列表失败', error.message);
 	} finally {
 	  loading.value = false;
 	}
   };
-  
+// 获取人员数据
+const fetchPersonnel = async () => {
+    loading.value = true;
+    // personnelService.getPersonnelList();
+    try {
+        const response = await axios.get('/basic');
+        if (response.status === 200) {
+            personnelList.value = response.data.map((person: Person) => ({
+                ...person,
+                // 确保prochance存在
+                prochance: person.prochance || 0,
+            }));
+        } else {
+        }
+        personnelList.value = response.data,
+        console.log('人员数据:', personnelList.value);
+    } catch (error: any) {
+        console.error('获取人员数据失败:', error);
+    } finally {
+        loading.value = false;
+    }
+};
+ const fetchAndShowScores = async (person: Person) => {
+      try {
+        const analyzeResponse = await axios.get(`/analyze/${person.id}`);
+        if (analyzeResponse.data.code === 200) {
+          const analysisData = analyzeResponse.data.data;
+          person.research = analysisData.dimensionScores.research;
+          person.teaching = analysisData.dimensionScores.teaching;
+        }
+      } catch (error) {
+        console.error(`获取人员 ${person.id} 分析数据失败`, error);
+      }
+    };
   // 重置筛选条件
   const resetFilters = () => {
 	searchName.value = '';
@@ -200,8 +274,11 @@ const response = await personnelService.getList();
   // 生命周期钩子
   onMounted(() => {
 	fetchPersonnelList();
+	fetchPersonnel();
   });
+  console.log('人员列表:', personnelList.value);
   </script>
+
 <style src="../components/style.css">
 .detail-link {
     color: #1890ff;

@@ -36,6 +36,39 @@ static async register(registerData) {
         throw error;
     }
 }
-}
+static async sendResetPasswordCode(email) {
+    try {
+      console.log('发送密码重置验证码，邮箱:', email);
+      const data = await api.post('/auth/send-reset-code', { email });
+      console.log('验证码发送成功，返回数据:', data);
+      return data;
+    } catch (error) {
+      console.error('验证码发送失败，错误:', error);
+      throw error;
+    }
+  }
+  static async verifyResetPasswordCode(email, code) {
+    try {
+      console.log('验证密码重置码，邮箱:', email);
+      const data = await api.post('/auth/verify-reset-code', { email, code });
+      console.log('验证码验证成功，返回数据:', data);
+      return data;
+    } catch (error) {
+      console.error('验证码验证失败，错误:', error);
+      throw error;
+    }
+  }
+  static async resetPassword(email, code, newPassword) {
+    try {
+      console.log('重置密码，邮箱:', email);
+      const data = await api.post('/auth/reset-password', { email, code, newPassword });
+      console.log('密码重置成功，返回数据:', data);
+      return data;
+    } catch (error) {
+      console.error('密码重置失败，错误:', error);
+      throw error;
+    }
+  }
 
+}
 export default AuthModel;

@@ -102,7 +102,7 @@
       </div>
       
       <!-- 安全设置 -->
-      <div class="info-section">
+      <!-- <div class="info-section">
         <h3 class="section-title">安全设置</h3>
         <div class="security-items">
           <div class="security-item" @click="handleChangePassword">
@@ -130,7 +130,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     
     <!-- 底部操作按钮 -->

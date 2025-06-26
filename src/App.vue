@@ -77,7 +77,7 @@ const menuItems = [
   { path: '/team_analysis', title: '班子分析', icon: '👥' },
   { path: '/profile_list', title: '干部教师画像', icon: '👤' },
   { path: '/talent', title: '梯队建设', icon: '📈' },
-  { path: '/department_communication', title: '部门对接', icon: '📩' },
+  { path: '/login/department_communication', title: '部门对接', icon: '📩' },
   { path: '/training', title: '培训筛选', icon: '🎓' },
 ]
 
