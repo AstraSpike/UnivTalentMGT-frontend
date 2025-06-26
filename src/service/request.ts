@@ -23,36 +23,25 @@ service.interceptors.request.use(
   error => Promise.reject(error)
 );
 
-// 响应拦截器 - 处理文档定义的状态码
+// 响应拦截器 - 简化处理逻辑
 service.interceptors.response.use(
   response => {
-    const res = response.data;
-    // 文档状态码规范：200成功，400/404参数/资源错误，500服务器错误
-    if (res.code && res.code !== 200) {
-      ElMessage({
-        message: res.message || '请求失败',
-        type: 'error',
-        duration: 3000,
-      });
-      // 401未授权时跳转登录（文档未明确，但常见认证场景）
-      if (res.code === 401) {
-        localStorage.removeItem('token');
-      }
-      return Promise.reject(new Error(res.message || '请求失败'));
-    } else {
-      return res;
-    }
+    // 直接返回响应数据
+    return response.data;
   },
   error => {
     const { response } = error;
     let message = '接口请求失败';
-    // 适配文档状态码
     if (response) {
       if (response.status === 404) message = '资源未找到';
       else if (response.status === 500) message = '服务器内部错误';
       else if (response.status === 400) message = '参数格式错误';
+      else if (response.status === 401) {
+        message = '未授权，请重新登录';
+        localStorage.removeItem('token');
+      }
     }
-    ElMessage({ message, type: 'error' });
+    ElMessage({ message, type: 'error', duration: 3000 });
     return Promise.reject(error);
   }
 );

@@ -1,127 +1,116 @@
 <template>
   <div class="login-container">
-      <!-- 背景装饰元素 -->
-      <div class="bg-decoration bg-top"></div>
-      <div class="bg-decoration bg-bottom"></div>
-      
-      <!-- 登录卡片 -->
-      <div class="login-card">
-          <!-- 卡片头部 -->
-          <div class="card-header">
-              <div class="logo">
-                  <i class="fa fa-graduation-cap"></i>
-              </div>
-              <h2>干部教师管理系统</h2>
-              <p>请登录您的账户</p>
-          </div>
-          
-          <!-- 登录方式切换 -->
-          <div class="login-type-toggle">
-              <button 
-                  class="toggle-btn" 
-                  :class="{ 'active': loginType === 'userid' }"
-                  @click="loginType = 'userid'"
-              >
-                  <i class="fa fa-user-circle"></i>
-                  <span>学号登录</span>
-              </button>
-              <button 
-                  class="toggle-btn" 
-                  :class="{ 'active': loginType === 'email' }"
-                  @click="loginType = 'email'"
-              >
-                  <i class="fa fa-envelope"></i>
-                  <span>邮箱登录</span>
-              </button>
-          </div>
-          
-          <!-- 卡片内容 -->
-          <div class="card-body">
-              <form @submit.prevent="handleLogin">
-                  <!-- 用户名/邮箱输入 -->
-                  <div class="form-group">
-                      <div class="input-wrapper">
-                          <i :class="loginType === 'userid' ? 'fa fa-user' : 'fa fa-envelope'"></i>
-                          <input 
-                              type="text" 
-                              v-model="form.username" 
-                              :placeholder="loginType === 'userid' ? '请输入用户名或工号' : '请输入邮箱'"
-                              required
-                          >
-                      </div>
-                      <p class="error-message" v-if="errors.username">{{ errors.username }}</p>
-                  </div>
-                  
-                  <!-- 密码/验证码输入 -->
-                  <div class="form-group">
-                      <div class="input-wrapper">
-                          <i :class="loginType === 'userid' ? 'fa fa-lock' : 'fa fa-key'"></i>
-                          <input 
-                              :type="loginType === 'userid' && passwordVisible ? 'text' : 'password'" 
-                              v-model="form.password" 
-                              :placeholder="loginType === 'userid' ? '请输入密码' : '请输入验证码'"
-                              required
-                          >
-                          
-                          <!-- 验证码获取按钮 -->
-                          <button 
-                              v-if="loginType === 'email'"
-                              type="button" 
-                              class="get-code-btn"
-                              :disabled="isSendingCode || countdown > 0"
-                              @click="getVerificationCode"
-                          >
-                              {{ countdown > 0 ? `${countdown}秒后重新获取` : '获取验证码' }}
-                          </button>
-                          
-                          <!-- 密码可见性切换 -->
-                          <button 
-                              v-if="loginType === 'userid'"
-                              type="button" 
-                              class="toggle-password"
-                              @click="togglePasswordVisibility"
-                          >
-                              <i :class="passwordVisible ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
-                          </button>
-                      </div>
-                      <p class="error-message" v-if="errors.password">{{ errors.password }}</p>
-                  </div>
-                  
-                  <!-- 忘记密码 -->
-                  <div class="form-options">
-                      <div class="placeholder" v-show="loginType !== 'userid'"></div>
-                      <a href="#" class="forgot-password" v-show="loginType === 'userid'">忘记密码?</a>
-                  </div>
-                  
-                  <!-- 登录按钮 -->
-                  <button 
-                      type="submit" 
-                      class="login-button"
-                      :disabled="isLoading"
-                  >
-                      <span v-if="isLoading" class="loading-spinner">
-                          <i class="fa fa-circle-o-notch fa-spin"></i>
-                      </span>
-                      {{ loginType === 'userid' ? '密码登录' : '验证码登录' }}
-                  </button>
-                  
-                  <!-- 错误提示 -->
-                  <div v-if="loginError" class="error-alert">
-                      <i class="fa fa-exclamation-circle"></i>
-                      <p>{{ loginError }}</p>
-                  </div>
-              </form>
-          </div>
+    <!-- 登录卡片 -->
+    <div class="login-card">
+      <!-- 卡片头部 -->
+      <div class="card-header">
+        <div class="logo">
+          <i class="fa fa-graduation-cap"></i>
+        </div>
+        <h2>干部教师管理系统</h2>
+        <p>请登录或注册您的账户</p>
       </div>
+
+      <!-- 登录/注册方式切换 -->
+      <div class="login-type-toggle">
+        <button 
+          class="toggle-btn" 
+          :class="{ 'active': isLoginMode }"
+          @click="isLoginMode = true"
+        >
+          <i class="fa fa-user-circle"></i>
+          <span>登录</span>
+        </button>
+        <button 
+          class="toggle-btn" 
+          :class="{ 'active': !isLoginMode }"
+          @click="isLoginMode = false"
+        >
+          <i class="fa fa-user-plus"></i>
+          <span>注册</span>
+        </button>
+      </div>
+
+      <!-- 卡片内容 -->
+      <div class="card-body">
+        <form @submit.prevent="isLoginMode ? handleLogin() : handleRegister()">
+          <!-- 用户名/邮箱输入 -->
+          <div class="form-group">
+            <div class="input-wrapper">
+              <i :class="loginType === 'userid' ? 'fa fa-user' : 'fa fa-envelope'"></i>
+              <input 
+                type="text" 
+                v-model="form.username" 
+                :placeholder="loginType === 'userid' ? '请输入用户名或工号' : '请输入邮箱'"
+                required
+              >
+            </div>
+            <p class="error-message" v-if="errors.username">{{ errors.username }}</p>
+          </div>
+
+          <!-- 密码/验证码输入 -->
+          <div class="form-group">
+            <div class="input-wrapper">
+              <i :class="loginType === 'userid' ? 'fa fa-lock' : 'fa fa-key'"></i>
+              <input 
+                :type="loginType === 'userid' && passwordVisible ? 'text' : 'password'" 
+                v-model="form.password" 
+                :placeholder="loginType === 'userid' ? '请输入密码' : '请输入验证码'"
+                required
+              >
+              <!-- 密码可见性切换 -->
+              <button 
+                v-if="loginType === 'userid'"
+                type="button" 
+                class="toggle-password"
+                @click="togglePasswordVisibility"
+              >
+                <i :class="passwordVisible ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+              </button>
+            </div>
+            <p class="error-message" v-if="errors.password">{{ errors.password }}</p>
+          </div>
+
+          <!-- 忘记密码 -->
+          <div class="form-options">
+            <div class="placeholder" v-show="loginType !== 'userid'"></div>
+            <a href="#" class="forgot-password" v-show="isLoginMode && loginType === 'userid'">忘记密码?</a>
+          </div>
+
+          <!-- 登录/注册按钮 -->
+          <button 
+            type="submit" 
+            class="login-button"
+            :disabled="isLoading"
+          >
+            <span v-if="isLoading" class="loading-spinner">
+              <i class="fa fa-circle-o-notch fa-spin"></i>
+            </span>
+            {{ isLoginMode ? (loginType === 'userid' ? '密码登录' : '验证码登录') : '注册' }}
+          </button>
+
+          <!-- 错误提示 -->
+          <div v-if="loginError" class="error-alert">
+            <i class="fa fa-exclamation-circle"></i>
+            <p>{{ loginError }}</p>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthModel from '../models/authModel';
+import personnelService from '../service/personnelService';
 
 // 引入路由
 const router = useRouter();
+
+// 登录/注册模式
+const isLoginMode = ref(true);
 
 // 登录类型：'userid' 或 'email'
 const loginType = ref('userid');
@@ -142,7 +131,6 @@ const errors = reactive({
 const isLoading = ref(false);
 const loginError = ref('');
 const passwordVisible = ref(false);
-const rememberMe = ref(false);
 const isSendingCode = ref(false);
 const countdown = ref(0);
 let countdownTimer: number | null = null;
@@ -155,22 +143,18 @@ const togglePasswordVisibility = () => {
 // 表单验证
 const validateForm = () => {
   let isValid = true;
-  
+
   // 重置错误
   errors.username = '';
   errors.password = '';
-  
-  // 验证用户名/邮箱
+
+  // 验证用户名
   if (!form.username.trim()) {
       errors.username = loginType.value === 'userid' 
           ? '请输入工号' 
           : '请输入邮箱';
       isValid = false;
-  } else if (loginType.value === 'email' && !isValidEmail(form.username)) {
-      errors.username = '请输入有效的邮箱地址';
-      isValid = false;
-  }
-  
+  } 
   // 验证密码/验证码
   if (!form.password) {
       errors.password = loginType.value === 'userid' 
@@ -184,57 +168,18 @@ const validateForm = () => {
       errors.password = '验证码格式不正确';
       isValid = false;
   }
-  
+
   return isValid;
 };
-
-// 邮箱格式验证
-const isValidEmail = (email: string) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-// 获取验证码
-const getVerificationCode = async () => {
-  // 验证邮箱
-  if (!form.username.trim()) {
-      errors.username = '请输入邮箱';
-      return;
-  }
-  
-  if (!isValidEmail(form.username)) {
-      errors.username = '请输入有效的邮箱地址';
-      return;
-  }
-  
-  isSendingCode.value = true;
-  loginError.value = '';
-  
-  try {
-      // 模拟发送验证码API调用
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 模拟发送成功
-      console.log(`验证码已发送至邮箱: ${form.username}`);
-      
-      // 开始倒计时
-      startCountdown();
-  } catch (error: any) {
-      loginError.value = error.message || '获取验证码失败，请重试';
-  } finally {
-      isSendingCode.value = false;
-  }
-};
-
 // 开始倒计时
 const startCountdown = () => {
   countdown.value = 60;
-  
+
   // 清除之前的计时器
   if (typeof countdownTimer === 'number') {
       clearInterval(countdownTimer);
   }
-  
+
   // 设置新的计时器
   countdownTimer = setInterval(() => {
       if (countdown.value > 0) {
@@ -255,38 +200,59 @@ onUnmounted(() => {
 
 // 登录处理
 const handleLogin = async () => {
-  if (!validateForm()) return;
-  isLoading.value = true;
-  loginError.value = '';
+  if (!validateForm()) {
+    return;
+  }
+
   try {
-      const loginData = {
-        username: form.username,
-        password: form.password
-      };
-      const response = await AuthModel.login(loginData);
-      
-      if (response.success) {
-          // 存储认证信息
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('user', JSON.stringify(response.user));
-          
-          // 如果勾选了记住我，则设置长期存储
-          if (rememberMe.value && loginType.value === 'userid') {
-              localStorage.setItem('rememberMe', 'true');
-          }
-          
-          // 登录成功后跳转到主页
-          router.push('/home');
-      } else {
-          throw new Error(loginType.value === 'userid' 
-              ? '用户名或密码不正确' 
-              : '邮箱或验证码不正确');
-      }
-  } catch (error: any) {
-      // 处理登录错误
-      loginError.value = error.message || '登录失败，请重试';
+    isLoading.value = true;
+    loginError.value = '';
+
+    const data = await AuthModel.login(form);
+    console.log('登录成功，数据:', data);
+
+    // 存储token和用户信息
+    sessionStorage.setItem("token", data.token);
+    const userInfo = {
+      userId: data.userId,
+      username: data.username
+    };
+    localStorage.setItem("user-info", JSON.stringify(userInfo));
+
+    // 获取返回URL（如果有）
+    const returnUrl = localStorage.getItem("return-url") || '/';
+    localStorage.removeItem("return-url"); // 清除返回URL
+
+    // 跳转到目标页面
+    router.push("/home")
+  } catch (error) {
+    console.error('登录失败:', error);
+    loginError.value = '用户名或密码错误';
   } finally {
-      isLoading.value = false;
+    isLoading.value = false;
+  }
+};
+
+// 注册处理
+const handleRegister = async () => {
+  if (!validateForm()) {
+    return;
+  }
+
+  try {
+    isLoading.value = true;
+    loginError.value = '';
+
+    const data = await AuthModel.register(form);
+    console.log('注册成功，数据:', data);
+
+    // 注册成功后自动登录
+    await handleLogin();
+  } catch (error) {
+    console.error('注册失败:', error);
+    loginError.value = '注册失败，请重试';
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -324,31 +290,7 @@ a:hover {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  position: relative;
-  overflow: hidden;
   background: linear-gradient(135deg, #165DFF 0%, #0E42D2 100%);
-}
-
-/* 背景装饰 */
-.bg-decoration {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  opacity: 0.2;
-  filter: blur(80px);
-}
-
-.bg-top {
-  top: -250px;
-  right: -100px;
-  background: linear-gradient(135deg, #FFFFFF 0%, #A6C8FF 100%);
-}
-
-.bg-bottom {
-  bottom: -250px;
-  left: -100px;
-  background: linear-gradient(135deg, #409EFF 0%, #165DFF 100%);
 }
 
 /* 登录卡片 */
@@ -648,4 +590,4 @@ a:hover {
 .error-alert i {
   margin-right: 8px;
 }
-</style>    
+</style>

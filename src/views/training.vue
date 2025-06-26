@@ -51,19 +51,19 @@
 						                    <td>教学能力</td>
 						                    <td>15</td>
 						                    <td>教学方法创新、课程设计优化</td>
-						                    <td><a href="#">查看详情</a></td>
+											<td><router-link :to="`/training/details`">查看详情</router-link></td>
 						                </tr>
 						                <tr>
 						                    <td>科研能力</td>
 						                    <td>22</td>
 						                    <td>科研项目申报、论文写作技巧</td>
-						                    <td><a href="#">查看详情</a></td>
+											<td><router-link :to="`/training/details`">查看详情</router-link></td>
 						                </tr>
 						                <tr>
 						                    <td>管理能力</td>
 						                    <td>8</td>
 						                    <td>团队管理、决策能力提升</td>
-						                    <td><a href="#">查看详情</a></td>
+											<td><router-link :to="`/training/details`">查看详情</router-link></td>
 						                </tr>
 						            </tbody>
 						        </table>
@@ -92,8 +92,7 @@
 						                    <span class="participant-tag">吴副教授</span>
 						                </div>
 						                <div class="form-actions" style="margin-top:10px;">
-						                    <button class="btn">生成培训名单</button>
-						                    <button class="btn btn-secondary">调整人员</button>
+						                    <button class="btn" @click="generateTrainingList">生成培训名单</button>
 						                </div>
 						            </div>
 						
@@ -121,8 +120,7 @@
 						                    <span class="participant-tag">褚教授</span>
 						                </div>
 						                <div class="form-actions" style="margin-top:10px;">
-						                    <button class="btn">生成培训名单</button>
-						                    <button class="btn btn-secondary">调整人员</button>
+						                    <button class="btn" @click="generateTrainingList">生成培训名单</button>
 						                </div>
 						            </div>
 						        </div>
@@ -173,6 +171,9 @@ onMounted(() => {
         chart.setOption(option);
     }
 });
+function generateTrainingList(){
+    alert("生成培训名单成功！")
+}
 </script>
 
 <style src="../components/style.css" scoped>

@@ -12,12 +12,15 @@ class PersonnelService {
 
     /**
      * 获取干部教师详情
-     * @param {number} id - 人员 ID
+     * @param {number} personnelId - 人员 ID
      */
-    static async getPersonnelDetail(id) {
-        return await PersonnelModel.getPersonnelDetail(id);
+    static async getPersonnelDetail(personnelId) {
+        return await PersonnelModel.getPersonnelDetail(personnelId);
     }
 
+    static async getPersonnelBasicInfo() {
+        return await PersonnelModel.getPersonnelBasicInfo();
+    }
     /**
      * 导出干部教师列表为 Excel
      * @param {Object} query - 查询参数
@@ -59,6 +62,16 @@ class PersonnelService {
 
         await workbook.xlsx.write(res);
         res.end();
+    }
+
+    /**
+     * 调整培训人员
+     * @param {number} trainingId - 培训 ID
+     * @param {Array<number>} participantIds - 参训人员 ID 数组
+     */
+    static async adjustTrainingParticipants(trainingId, participantIds) {
+        // 这里需要根据实际的后端 API 进行调整
+        return await PersonnelModel.adjustTrainingParticipants(trainingId, participantIds);
     }
 }
 

@@ -8,6 +8,12 @@ class AuthService {
     static async login(loginData) {
         return await AuthModel.login(loginData);
     }
+  /**
+     * 用户注册
+     * @param {Object} registerData - 注册数据
+     */
+  static async register(registerData) {
+    return await AuthModel.register(registerData);
 }
-
+}
 export default AuthService;

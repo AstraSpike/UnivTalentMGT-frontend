@@ -14,5 +14,17 @@ router.post('/users/login', async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
+/**
+ * 用户注册
+ * @route POST /users/register
+ */
+router.post('/users/register', async (req, res) => {
+    try {
+        const result = await AuthService.register(req.body);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
 
 export default router;

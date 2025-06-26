@@ -10,6 +10,8 @@ import userInfo from "../views/userInfo.vue";
 import LoginPage from '../views/LoginPage.vue';
 import changePassword from '../views/changePassword.vue';
 import changePhone from '../views/changePhone.vue';
+import TrainingDetails from '../views/TrainingDetails.vue';
+import PersonDetail from '../views/PersonDetail.vue'
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -75,6 +77,22 @@ const router = createRouter({
       name:'changePhone',
       component: changePhone,
       meta: {hideLayout: true}
+    },
+    {
+      path:'/training/details',
+      name:'TrainingDetails',
+      component: TrainingDetails,
+      meta: {hideLayout: true}
+    },
+    {
+      path:'/detail/:id',
+      name:'PersonDetail',
+      component: PersonDetail,
+      meta: {hideLayout: true},
+      props: (route) => ({ 
+        id: route.params.id,
+        baseInfo: route.params.baseInfo 
+      })
     }
 ]
 });
