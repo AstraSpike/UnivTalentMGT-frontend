@@ -34,8 +34,7 @@
           <h2>欢迎您</h2>
           <div class="user-info">
             <RouterLink to="/userinfo">
-              <div class="user-avatar">管</div>
-              <span>管理员</span>
+              <div class="user-avatar">校</div>
             </RouterLink>
           </div>
         </div>
@@ -75,7 +74,7 @@ const menuItems = [
   { path: '/home', title: '分析看板', icon: '📊' },
   { path: '/person_kb', title: '人员看板', icon: '👥' },
   { path: '/team_analysis', title: '班子分析', icon: '👥' },
-  { path: '/profile_list', title: '干部教师画像', icon: '👤' },
+  // { path: '/profile_list', title: '干部教师画像', icon: '👤' },
   { path: '/talent', title: '梯队建设', icon: '📈' },
   { path: '/login/department_communication', title: '部门对接', icon: '📩' },
   { path: '/training', title: '培训筛选', icon: '🎓' },

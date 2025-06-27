@@ -11,6 +11,8 @@ import LoginPage from '../views/LoginPage.vue';
 import changePassword from '../views/changePassword.vue';
 import changePhone from '../views/changePhone.vue';
 import TrainingDetails from '../views/TrainingDetails.vue';
+import TrainingDetails_research from '../views/TrainingDetails_research.vue';
+import TrainingDetails_management from '../views/TrainingDetails_management.vue';
 import PersonDetail from '../views/PersonDetail.vue';
 import ForgotPassword from '../views/ForgotPassword.vue'; 
 const router = createRouter({
@@ -35,11 +37,11 @@ const router = createRouter({
       name:"team_analysis",
       component: team_analysis,
     },
-    {
-      path:"/profile_list",
-      name:"profile_list",
-      component: profile_list,
-    },
+    // {
+    //   path:"/profile_list",
+    //   name:"profile_list",
+    //   component: profile_list,
+    // },
     {
       path:"/talent",
       name:"talent",
@@ -62,7 +64,11 @@ const router = createRouter({
       path:"/userInfo",
       name:"userInfo",
       component: userInfo,
-      meta: { hideLayout: true }
+      meta: { hideLayout: true },
+        props: (route) => ({ 
+        id: route.params.id,
+        baseInfo: route.params.baseInfo 
+      })
     },
     {
       path:'/login',
@@ -83,9 +89,21 @@ const router = createRouter({
       meta: {hideLayout: true}
     },
     {
-      path:'/training/details',
+      path:'/training/details/teach',
       name:'TrainingDetails',
       component: TrainingDetails,
+      meta: {hideLayout: true}
+    },
+    {
+      path:'/training/details/research',
+      name:'TrainingDetails_research',
+      component: TrainingDetails_research,
+      meta: {hideLayout: true}
+    },
+    {
+      path:'/training/details/management',
+      name:'TrainingDetails_management',
+      component: TrainingDetails_management,
       meta: {hideLayout: true}
     },
     {

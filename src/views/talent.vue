@@ -136,7 +136,8 @@ onMounted(() => {
         // 配置图表选项
         const option = {
             tooltip: {
-                trigger: 'item'
+                trigger: 'item',
+				formatter: '{a} <br/>{b}: {c} 人 ({d}%)' // 显示人数和占比
             },
             series: [
                 {

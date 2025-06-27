@@ -70,7 +70,7 @@
     </div>
   </template>
   
-  <script lang="ts" setup name="teach">
+  <script lang="ts" setup name="research">
   import { ref, onMounted } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   import axios from 'axios';

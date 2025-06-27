@@ -74,14 +74,18 @@ const promotionChart = ref(null);
 const performanceChart = ref(null);
 
 onMounted(() => {
-    // 干部教师年龄分布柱状图
+    // 干部教师年龄分布柱状图优化
     if (ageChart.value) {
         const chart = echarts.init(ageChart.value);
-        const option = {
-            xAxis: {
-                type: 'category',
-                data: ['20-30', '31-40', '41-50', '51-60']
-            },
+        const option = { 
+            tooltip: { 
+                trigger: 'axis', 
+                formatter: '{b} 岁区间: {c} 人' 
+            }, 
+            xAxis: { 
+                type: 'category', 
+                data: ['20-30', '31-40', '41-50', '51-60'] 
+            }, 
             yAxis: {
                 type: 'value'
             },
@@ -93,19 +97,27 @@ onMounted(() => {
         chart.setOption(option);
     }
 
-    // 职称分布饼图
+    // 职称分布饼图优化
     if (titleChart.value) {
         const chart = echarts.init(titleChart.value);
+        const data = [
+            { value: 1048, name: '教授' },
+            { value: 735, name: '副教授' },
+            { value: 580, name: '讲师' },
+            { value: 484, name: '助教' }
+        ];
         const option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: function(params) {
+                    // 修改为直接显示名称和数值
+                    return params.name + ': ' + params.value + ' 人';
+                }
+            },
             series: [{
                 type: 'pie',
                 radius: '50%',
-                data: [
-                    { value: 1048, name: '教授' },
-                    { value: 735, name: '副教授' },
-                    { value: 580, name: '讲师' },
-                    { value: 484, name: '助教' }
-                ],
+                data: data,
                 emphasis: {
                     itemStyle: {
                         shadowBlur: 10,
@@ -118,7 +130,7 @@ onMounted(() => {
         chart.setOption(option);
     }
 
-    // 教学成果雷达图
+    // 教学成果雷达图优化
     if (teachingChart.value) {
         const chart = echarts.init(teachingChart.value);
         const option = {
@@ -142,7 +154,7 @@ onMounted(() => {
         chart.setOption(option);
     }
 
-    // 科研业绩热力图
+    // 科研业绩热力图优化
     if (researchChart.value) {
         const chart = echarts.init(researchChart.value);
         const data = [];
@@ -184,10 +196,14 @@ onMounted(() => {
         chart.setOption(option);
     }
 
-    // 晋升趋势折线图
+    // 晋升趋势折线图优化
     if (promotionChart.value) {
         const chart = echarts.init(promotionChart.value);
         const option = {
+            tooltip: {
+                trigger: 'axis',
+                formatter: '{b} 年: {c} 人'
+            },
             xAxis: {
                 type: 'category',
                 data: ['2016', '2017', '2018', '2019', '2020', '2021', '2022']
@@ -203,10 +219,14 @@ onMounted(() => {
         chart.setOption(option);
     }
 
-    // 绩效等级对比条形图
+    // 绩效等级对比条形图优化
     if (performanceChart.value) {
         const chart = echarts.init(performanceChart.value);
         const option = {
+            tooltip: {
+                trigger: 'axis',
+                formatter: '{b} 等级: {c} 人'
+            },
             xAxis: {
                 type: 'value'
             },

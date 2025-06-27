@@ -109,9 +109,9 @@
                                 <th>职务</th>
                                 <th>职称</th>
                                 <th>学历</th>
-                                <th>晋升概率</th>
                                 <th>标签</th>
-                                <th>操作</th>
+                                <th>    </th>
+                                <th>    </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -123,7 +123,7 @@
                                 <td>{{ person.position }}</td>
                                 <td>{{ person.title }}</td>
                                 <td>{{ person.education }}</td>
-                                <td>{{ person.prochance || 0 }}%</td>
+                                <td>{{ person.tags }}</td>
                                 <td>
                                     <span v-for="tag in person.tags" :key="tag.id" :class="'tag tag-' + tag.tagName">
                                         {{ tag.tagName }}
@@ -139,17 +139,6 @@
 
             </div>
         </div>
-<div class="pagination">
-  <div 
-    class="page-item" 
-    v-for="page in Math.ceil(totalItems / pageSize)"
-    :key="page"
-    :class="{ active: currentPage === page }"
-    @click="currentPage = page"
-  >
-    {{ page }}
-  </div>
-</div>
         <!-- <div v-else-if="currentView === 'list' && personnelList.length === 0" class="empty-state">
             <p>暂无人员数据</p>
         </div> -->

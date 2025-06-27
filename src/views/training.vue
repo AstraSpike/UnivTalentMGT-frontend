@@ -51,19 +51,19 @@
 						                    <td>教学能力</td>
 						                    <td>15</td>
 						                    <td>教学方法创新、课程设计优化</td>
-											<td><router-link :to="`/training/details`">查看详情</router-link></td>
+											<td><router-link :to="`/training/details/teach`">查看详情</router-link></td>
 						                </tr>
 						                <tr>
 						                    <td>科研能力</td>
 						                    <td>22</td>
 						                    <td>科研项目申报、论文写作技巧</td>
-											<td><router-link :to="`/training/details`">查看详情</router-link></td>
+											<td><router-link :to="`/training/details/research`">查看详情</router-link></td>
 						                </tr>
 						                <tr>
 						                    <td>管理能力</td>
 						                    <td>8</td>
 						                    <td>团队管理、决策能力提升</td>
-											<td><router-link :to="`/training/details`">查看详情</router-link></td>
+											<td><router-link :to="`/training/details/management`">查看详情</router-link></td>
 						                </tr>
 						            </tbody>
 						        </table>

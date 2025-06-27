@@ -70,7 +70,7 @@
     </div>
   </template>
   
-  <script lang="ts" setup name="teach">
+  <script lang="ts" setup name="management">
   import { ref, onMounted } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   import axios from 'axios';
@@ -88,7 +88,6 @@ interface TrainingData {
   const goBack = () => {
     router.back();
   };
-  
 const staffId = 'S001';
 const capabilities = {
   teaching: 4.5,
