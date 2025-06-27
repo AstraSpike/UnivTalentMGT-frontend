@@ -1,1 +1,0 @@
-export function getPersonDetail(id: string): Promise<any>;
