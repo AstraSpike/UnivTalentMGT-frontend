@@ -193,11 +193,14 @@ import { ref, onMounted, watch, computed,onUnmounted, provide } from 'vue';
 import { useRouter } from 'vue-router';
 import * as echarts from 'echarts';
 import axios from 'axios';
-import personnelService from '../service/personnelService' 
+import personnelService from '../service/personnelService' ;
+import { usePersonInfoStore } from '../stores/personInfo';
 // 定义人员数据类型
 interface Person {
     id: number;
     name: string;
+    personnelId: number;
+    idCardNumber: string;
     gender: 'male' | 'female';
     age: number;
     position: string;
@@ -232,6 +235,7 @@ const listChart = ref(null);
 const loading = ref(false);
 const errorMessage = ref('');
 const personnelList = ref<Person[]>([]);
+const personInfoStore = usePersonInfoStore();
 const filteredPersonnel = computed(() => {
     return personnelList.value.filter(person => {
         const departmentMatch = !selectedDepartment.value || person.department === selectedDepartment.value;
@@ -417,38 +421,48 @@ const fetchPersonnel = async () => {
     }
 };
 // 查看详情
-const showProfileDetail = (person: Person | number) => {
-    let personId: number;
-    let basicInfo = {};
-    if (typeof person === 'number') {
-        personId = person;
-    } else {
-        personId = person.id;
-        basicInfo = {
-            name: person.name,
-            gender: person.gender === 'male' ? '男' : '女', // 确保格式匹配
-            age: person.age,
-            department: person.department,
-            position: person.position,
-            title: person.title,
-            entryTime: person.entryTime,
-            university: person.university,
-            major:person.major,
-            phone: person.phone,
-            email: person.email,
-            politicalStatus:person.politicalStatus,
-            education:person.education,
-            nativePlace:person.nativePlace,
-            maritalStatus:person.maritalStatus,
-            ethnicity:person.ethnicity
-        };
-    }
-    router.push({ 
-        name: 'PersonDetail', 
-        params: { id: personId },
-        query: { basicInfo: JSON.stringify(basicInfo) }
-    });
-};
+// const showProfileDetail = (person: Person | number) => {
+//     let personId: number;
+//     let basicInfo = {};
+//     if (typeof person === 'number') {
+//         personId = person;
+//     } else {
+//         personId = person.id;
+//         basicInfo = {
+//             name: person.name,
+//             gender: person.gender === 'male' ? '男' : '女', // 确保格式匹配
+//             age: person.age,
+//             department: person.department,
+//             position: person.position,
+//             title: person.title,
+//             entryTime: person.entryTime,
+//             university: person.university,
+//             major:person.major,
+//             phone: person.phone,
+//             email: person.email,
+//             politicalStatus:person.politicalStatus,
+//             education:person.education,
+//             nativePlace:person.nativePlace,
+//             maritalStatus:person.maritalStatus,
+//             ethnicity:person.ethnicity
+//         };
+//     }
+//     router.push({ 
+//         name: 'PersonDetail', 
+//         params: { id: personId },
+//         query: { basicInfo: JSON.stringify(basicInfo) }
+//     });
+// };
+const showProfileDetail = (person: Person) => {
+    personInfoStore.setPersonInfo(person)
+    router.push({
+        name: 'PersonDetail',
+        params: { id: typeof person === 'number' ? person : person.id }
+    })
+}
+
+
+
 // 重置筛选条件
 const resetFilters = () => {
     selectedDepartment.value = '';

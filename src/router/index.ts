@@ -113,7 +113,7 @@ const router = createRouter({
       meta: {hideLayout: true},
       props: (route) => ({ 
         id: route.params.id,
-        baseInfo: route.params.baseInfo 
+        // baseInfo: route.params.baseInfo 
       })
     },
     {

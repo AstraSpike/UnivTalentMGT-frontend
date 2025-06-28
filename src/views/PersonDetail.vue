@@ -252,9 +252,10 @@ import { useRoute, useRouter } from 'vue-router';
 import PersonnelService from '../service/personnelService.js';
 import { CircleClose } from '@element-plus/icons-vue';
 import axios from 'axios';
+import { usePersonInfoStore } from '../stores/personInfo';
 // 人员信息接口 - 调整id类型为string或number
 interface Person {
-  id: string | number;
+  id: number;
   personnelId: number;
   idCardNumber: string;
   emergencyContactName: string;
@@ -317,6 +318,7 @@ const personInfo = ref<Person | null>(null);
 const loading = ref(false);
 const error = ref('');
 const baseInfo = ref<Person | null>(null);
+const personInfoStore = usePersonInfoStore();
 // 判断是否为有效人员数据 - 调整id验证逻辑
 const isValidPerson = (data: any): data is Person => {
   if (!data) {
@@ -465,8 +467,8 @@ const retry = () => {
             if (analyzeResponse.data.code === 200) {
                 const analysisData = analyzeResponse.data.data;
                 if (personInfo.value) {
-                    personInfo.value.research = analysisData.dimensionScores.research;
-                    personInfo.value.teaching = analysisData.dimensionScores.teaching;
+                    personInfo.value.research = Number(analysisData.dimensionScores.research.toFixed(3));
+                    personInfo.value.teaching = Number(analysisData.dimensionScores.teaching.toFixed(3));
                     alert('分析数据获取成功,教学评分为:' + personInfo.value.teaching + ',科研评分为:' + personInfo.value.research);
                 }
             }
@@ -476,16 +478,16 @@ const retry = () => {
     };
 
 onMounted(() => {
-    const basicInfo = route.query.basicInfo ? JSON.parse(route.query.basicInfo as string) : null;
+    // const basicInfo = route.query.basicInfo ? JSON.parse(route.query.basicInfo as string) : null;
+    const basicInfo = personInfoStore.basicInfo;
     if (basicInfo) {
         // 使用展开运算符确保深度合并
         baseInfo.value = {
-            ...baseInfo.value, // 保留初始值
-            ...basicInfo // 用basicInfo覆盖
+          ...(baseInfo.value || {}), // 确保初始值不为 null 时才展开
+          ...(basicInfo as Person) // 明确类型为 Person
         };
         console.log('合并后的baseInfo:', baseInfo.value);
     }
-    
     fetchPersonDetail();
 });
     console.log('baseInfo:',baseInfo.value)
