@@ -1,155 +1,210 @@
-<template>
-<div id="team-analysis-page" class="page">
-		    <div class="filter-bar">
-		        <div class="filter-item">
-		            <label>班子类型</label>
-		            <select>
-		                <option>校级领导班子</option>
-		                <option>院级领导班子</option>
-		                <option>系级领导班子</option>
-		            </select>
-		        </div>
-		        <div class="filter-item">
-		            <label>分析维度</label>
-		            <select>
-		                <option>结构分析</option>
-		                <option>绩效评估</option>
-		                <option>协同效果</option>
-		            </select>
-		        </div>
-		        <button class="btn">分析</button>
-		    </div>
-		
-		    <div class="card">
-		        <div class="card-title">校级领导班子结构分析</div>
-		        <!-- 为班子结构雷达图准备 DOM -->
-		        <div ref="structureChart" class="chart-container" style="height:400px;"></div>
-		        <div class="card-title">分析结果</div>
-		        <p>当前校级领导班子年龄结构合理，专业背景覆盖全面，但管理经验分布不均，部分成员学术成果较为薄弱。建议补充1-2名具有丰富管理经验和突出学术成果的成员。</p>
-		    </div>
-		
-		    <div class="card">
-		        <div class="card-title">绩效与协同评估</div>
-		        <!-- 为绩效协同热力图准备 DOM -->
-		        <div ref="performanceChart" class="chart-container" style="height:300px;"></div>
-		        <table>
-		            <thead>
-		                <tr>
-		                    <th>指标</th>
-		                    <th>得分</th>
-		                    <th>评价</th>
-		                </tr>
-		            </thead>
-		            <tbody>
-		                <tr>
-		                    <td>决策效率</td>
-		                    <td>85</td>
-		                    <td>良好</td>
-		                </tr>
-		                <tr>
-		                    <td>学科建设成果</td>
-		                    <td>78</td>
-		                    <td>中等</td>
-		                </tr>
-		                <tr>
-		                    <td>团队凝聚力</td>
-		                    <td>82</td>
-		                    <td>良好</td>
-		                </tr>
-		            </tbody>
-		        </table>
-		    </div>
-		
-		    <div class="card">
-		        <div class="card-title">优化建议与方案</div>
-		        <h4>建议调整方案：</h4>
-		        <ol>
-		            <li>引进1名具有10年以上高校管理经验的副校长</li>
-		            <li>调整2名班子成员的分工，加强学科建设职能</li>
-		            <li>组织班子成员参加管理能力提升培训</li>
-		        </ol>
-		        <div class="form-actions">
-		            <button class="btn">导出分析报告</button>
-		            <button class="btn">生成调整方案</button>
-		        </div>
-		    </div>
-</div>
-</template>
-
-<script lang="ts" setup name="team_analysis">
+<script lang='ts' setup name="team_analysis">
 import { ref, onMounted } from 'vue';
-import * as echarts from 'echarts';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { useRouter } from 'vue-router';
 
-// 定义图表的 ref
-const structureChart = ref(null);
-const performanceChart = ref(null);
+// 添加路由实例
+const router = useRouter();
+
+// 定义接口类型
+interface Person {
+  id: number;
+  name: string;
+  // 可根据实际情况添加更多字段
+}
+
+interface Team {
+  id: number;
+  name: string;
+  type: string;
+  members: Person[];
+  // 可根据实际情况添加更多字段
+}
+
+// 响应式数据
+const teamList = ref<Team[]>([]);
+const personList = ref<Person[]>([]);
+const selectedPersons = ref<Person[]>([]);
+const isCreateTeamDialogVisible = ref(false);
+const isTeamDetailDialogVisible = ref(false);
+const currentTeam = ref<Team | null>(null);
+
+// 模拟从 /basic 获取人员数据
+const fetchPersons = async () => {
+  try {
+    // 实际项目中替换为真实的 API 请求
+    // const response = await fetch('/basic');
+    // personList.value = await response.json();
+    personList.value = [
+      { id: 1, name: '张三' },
+      { id: 2, name: '李四' },
+      { id: 3, name: '王五' },
+    ];
+  } catch (error) {
+    ElMessage.error('获取人员数据失败');
+  }
+};
+
+// 模拟获取团队列表数据
+const fetchTeams = async () => {
+  try {
+    // 实际项目中替换为真实的 API 请求
+    // const response = await fetch('/teams');
+    // teamList.value = await response.json();
+    teamList.value = [
+      { id: 1, name: '开发团队', type: '技术', members: [{ id: 1, name: '张三' }] },
+      { id: 2, name: '测试团队', type: '质量保障', members: [{ id: 2, name: '李四' }] },
+    ];
+  } catch (error) {
+    ElMessage.error('获取团队列表失败');
+  }
+};
+
+// 打开创建团队模态框
+const openCreateTeamDialog = () => {
+  selectedPersons.value = [];
+  isCreateTeamDialogVisible.value = true;
+};
+
+// 创建团队
+const createTeam = () => {
+  if (selectedPersons.value.length === 0) {
+    ElMessage.warning('请至少选择一名成员');
+    return;
+  }
+  
+  // 模拟创建团队逻辑
+  const newTeam: Team = {
+    id: teamList.value.length + 1,
+    name: `新团队${teamList.value.length + 1}`,
+    type: '新建类型',
+    members: selectedPersons.value,
+  };
+  
+  teamList.value.push(newTeam);
+  isCreateTeamDialogVisible.value = false;
+  ElMessage.success('团队创建成功');
+};
+
+// 查看团队详情
+const viewTeamDetail = (team: Team) => {
+  currentTeam.value = team;
+  isTeamDetailDialogVisible.value = true;
+};
+
+// 智能分析
+const smartAnalysis = () => {
+  if (currentTeam.value) {
+    ElMessageBox.alert('这里显示智能分析结果', '智能分析', {
+      confirmButtonText: '确定',
+    });
+  }
+};
+
+// 跳转到团队建设页面
+const navigateToTeamConstruction = () => {
+  router.push({ name: 'team_construction' });
+};
 
 onMounted(() => {
-    // 班子结构雷达图
-    if (structureChart.value) {
-        const chart = echarts.init(structureChart.value);
-        const option = {
-            radar: {
-                indicator: [
-                    { name: '年龄结构', max: 100 },
-                    { name: '专业背景', max: 100 },
-                    { name: '管理经验', max: 100 },
-                    { name: '学术成果', max: 100 },
-                    { name: '团队协作', max: 100 }
-                ]
-            },
-            series: [{
-                type: 'radar',
-                data: [{
-                    value: [80, 90, 60, 70, 85],
-                    name: '校级领导班子'
-                }]
-            }]
-        };
-        chart.setOption(option);
-    }
-
-    // 绩效协同热力图
-    if (performanceChart.value) {
-        const chart = echarts.init(performanceChart.value);
-        const data = [];
-        const indicators = ['决策效率', '学科建设成果', '团队凝聚力', '资源分配', '对外合作'];
-        const timePeriods = ['Q1', 'Q2', 'Q3', 'Q4'];
-
-        for (let i = 0; i < indicators.length; i++) {
-            for (let j = 0; j < timePeriods.length; j++) {
-                data.push([j, i, Math.floor(Math.random() * 100)]);
-            }
-        }
-
-        const option = {
-            tooltip: {},
-            visualMap: {
-                min: 0,
-                max: 100,
-                calculable: true,
-                orient: 'vertical',
-                left: 'left',
-                top: 'center'
-            },
-            xAxis: {
-                type: 'category',
-                data: timePeriods
-            },
-            yAxis: {
-                type: 'category',
-                data: indicators
-            },
-            series: [{
-                name: '绩效协同',
-                type: 'heatmap',
-                data: data
-            }]
-        };
-        chart.setOption(option);
-    }
+  fetchPersons();
+  fetchTeams();
 });
 </script>
 
-<style src="../components/style.css">
+<template>
+  <div class="team-analysis">
+    <h1>团队分析</h1>
+    
+    <!-- 修改团队建设按钮 -->
+    <el-button type="primary" @click="navigateToTeamConstruction">团队建设</el-button>
+
+    <!-- 团队分析卡片 -->
+    <div class="team-cards">
+      <el-card
+        v-for="team in teamList"
+        :key="team.id"
+        class="team-card"
+        shadow="hover"
+        @click="viewTeamDetail(team)"
+      >
+        <template #header>
+          <div class="card-header">
+            <span>{{ team.name }}</span>
+            <el-tag size="small">{{ team.type }}</el-tag>
+          </div>
+        </template>
+        <div>
+          <p><strong>团队ID:</strong> {{ team.id }}</p>
+          <p><strong>团队成员:</strong> {{ team.members.map(member => member.name).join(', ') }}</p>
+        </div>
+      </el-card>
+    </div>
+
+    <!-- 创建团队模态框 -->
+    <el-dialog v-model="isCreateTeamDialogVisible" title="团队建设">
+      <el-checkbox-group v-model="selectedPersons">
+        <el-checkbox
+          v-for="person in personList"
+          :key="person.id"
+          :label="person"
+        >
+          {{ person.name }}
+        </el-checkbox>
+      </el-checkbox-group>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="isCreateTeamDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="createTeam">创建团队</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 团队详情模态框 -->
+    <el-dialog v-model="isTeamDetailDialogVisible" title="团队详情" v-if="currentTeam">
+      <el-descriptions :column="1">
+        <el-descriptions-item label="团队ID">{{ currentTeam.id }}</el-descriptions-item>
+        <el-descriptions-item label="团队名称">{{ currentTeam.name }}</el-descriptions-item>
+        <el-descriptions-item label="团队类型">{{ currentTeam.type }}</el-descriptions-item>
+        <el-descriptions-item label="团队成员">
+          {{ currentTeam.members.map(member => member.name).join(', ') }}
+        </el-descriptions-item>
+      </el-descriptions>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="isTeamDetailDialogVisible = false">关闭</el-button>
+          <el-button type="primary" @click="smartAnalysis">智能分析</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<style scoped>
+.team-analysis {
+  padding: 20px;
+}
+
+.team-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.team-card {
+  width: 300px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 </style>

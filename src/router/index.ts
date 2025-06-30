@@ -11,10 +11,9 @@ import LoginPage from '../views/LoginPage.vue';
 import changePassword from '../views/changePassword.vue';
 import changePhone from '../views/changePhone.vue';
 import TrainingDetails from '../views/TrainingDetails.vue';
-import TrainingDetails_research from '../views/TrainingDetails_research.vue';
-import TrainingDetails_management from '../views/TrainingDetails_management.vue';
 import PersonDetail from '../views/PersonDetail.vue';
 import ForgotPassword from '../views/ForgotPassword.vue'; 
+import team_construction from '../views/team_construction.vue';
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -89,22 +88,10 @@ const router = createRouter({
       meta: {hideLayout: true}
     },
     {
-      path:'/training/details/teach',
+      path:'/training/details/:type',  // 改为通过type标识能力维度（teach/research/management）
       name:'TrainingDetails',
-      component: TrainingDetails,
-      meta: {hideLayout: true}
-    },
-    {
-      path:'/training/details/research',
-      name:'TrainingDetails_research',
-      component: TrainingDetails_research,
-      meta: {hideLayout: true}
-    },
-    {
-      path:'/training/details/management',
-      name:'TrainingDetails_management',
-      component: TrainingDetails_management,
-      meta: {hideLayout: true}
+      component: TrainingDetails,  // 使用统一的详情页组件
+      props: true  // 允许通过params传递参数
     },
     {
       path:'/detail/:id',
@@ -121,6 +108,12 @@ const router = createRouter({
       name:'ForgotPassword',
       component: ForgotPassword,
       meta: {hideLayout: true}
+    },
+    {
+      path:'/team_analysis/team_construction',
+      name:'team_construction',
+      component: team_construction,
+      // meta: {hideLayout: true}
     }
 ]
 });

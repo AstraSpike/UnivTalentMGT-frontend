@@ -45,7 +45,7 @@
         <div v-if="currentView === 'card' && personnelList.length > 0" id="card-view" class="personnel-kanban">
             <div 
                 class="personnel-card" 
-                v-for="person in filteredPersonnel" 
+                v-for="person in uniquePersonnelList" 
                 :key="person.id"
                 @click="showProfileDetail(person)"
             >
@@ -142,42 +142,6 @@
         <!-- <div v-else-if="currentView === 'list' && personnelList.length === 0" class="empty-state">
             <p>暂无人员数据</p>
         </div> -->
-
-        <!--筛查选项设置-->
-        <div class="card">
-            <div class="card-title">筛查选项设置</div>
-            <div class="screening-options">
-                <div class="option-group">
-                    <div class="option-group-title">教学能力标签</div>
-                    <div class="option-item" v-for="tag in teachingTags" :key="tag.id">
-                        <label><input type="checkbox" v-model="selectedTags" :value="tag.tagName">{{ tag.tagName }}</label>
-                    </div>
-                </div>
-                <div class="option-group">
-                    <div class="option-group-title">科研能力标签</div>
-                    <div class="option-item" v-for="tag in researchTags" :key="tag.id">
-                        <label><input type="checkbox" v-model="selectedTags" :value="tag.tagName">{{ tag.tagName }}</label>
-                    </div>
-                </div>
-                <div class="option-group">
-                    <div class="option-group-title">管理能力标签</div>
-                    <div class="option-item" v-for="tag in managementTags" :key="tag.id">
-                        <label><input type="checkbox" v-model="selectedTags" :value="tag.tagName">{{ tag.tagName }}</label>
-                    </div>
-                </div>
-                <div class="option-group">
-                    <div class="option-group-title">创新能力标签</div>
-                    <div class="option-item" v-for="tag in innovationTags" :key="tag.id">
-                        <label><input type="checkbox" v-model="selectedTags" :value="tag.tagName">{{ tag.tagName }}</label>
-                    </div>
-                </div>
-            </div>
-            <div class="form-actions">
-                <button class="btn" @click="applyFilters">应用筛选</button>
-                <button class="btn btn-secondary">保存筛选方案</button>
-            </div>
-        </div>
-
         <!-- 会议场景适配 -->
         <div class="card">
             <div class="card-title">会议场景适配</div>
@@ -250,7 +214,15 @@ const filteredPersonnel = computed(() => {
         return departmentMatch && positionMatch && titleMatch && tagMatch;
     });
 });
-
+const uniquePersonnelList = computed(() => {  
+  const seenIds = new Set<number>();  
+  return personnelList.value.filter(person => {    
+    const id = person.id; // 替换为实际唯一标识字段（如personnelId）    
+    if (seenIds.has(id)) return false;    
+    seenIds.add(id);    
+    return true;  
+})
+})
 // 筛选条件
 const selectedDepartment = ref('');
 const selectedPosition = ref('');
@@ -258,37 +230,10 @@ const selectedTitle = ref('');
 const selectedTags = ref<string[]>([]);
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
-
 // 计算属性
 const totalPages = computed(() => {
     return Math.ceil(filteredPersonnel.value.length / itemsPerPage.value);
 });
-
-// 预定义的标签分类
-const teachingTags = ref([
-    { id: 1, tagName: '教学名师', tagType: '教学能力' },
-    { id: 2, tagName: '优秀课程负责人', tagType: '教学能力' },
-    { id: 3, tagName: '教学创新能手', tagType: '教学能力' }
-]);
-
-const researchTags = ref([
-    { id: 4, tagName: '科研领军人才', tagType: '科研能力' },
-    { id: 5, tagName: '核心期刊高产作者', tagType: '科研能力' },
-    { id: 6, tagName: '专利达人', tagType: '科研能力' }
-]);
-
-const managementTags = ref([
-    { id: 7, tagName: '优秀管理者', tagType: '管理能力' },
-    { id: 8, tagName: '高效协调者', tagType: '管理能力' },
-    { id: 9, tagName: '战略规划专家', tagType: '管理能力' }
-]);
-
-const innovationTags = ref([
-    { id: 10, tagName: '创新技术先锋', tagType: '创新能力' },
-    { id: 11, tagName: '模式创新开拓者', tagType: '创新能力' },
-    { id: 12, tagName: '教学方法革新者', tagType: '创新能力' }
-]);
-
 // 自动提取的筛选选项
 const departments = computed(() => {
     const depts = new Set<string>();
@@ -501,7 +446,6 @@ const basicData = ref<BasicPersonInfo[]>([]);
 onMounted(() => {
     fetchPersonnel();
     provide('basicData', basicData.value);
-    console.log('basicData:', basicData.value);
     if (currentView.value === 'list') {
         initListChart();
     }

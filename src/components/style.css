@@ -496,3 +496,27 @@ tr:hover {
     margin-bottom: 5px;
     font-size: 12px;
 }
+.form-item {
+  margin-bottom: 15px;
+}
+
+.form-item label {
+  display: inline-block;
+  width: 100px;
+}
+
+.form-item input {
+  padding: 5px;
+}
+
+button {
+  padding: 8px 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}

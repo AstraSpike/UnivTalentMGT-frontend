@@ -246,7 +246,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import PersonnelService from '../service/personnelService.js';
@@ -350,7 +350,7 @@ const isValidPerson = (data: any): data is Person => {
     { condition: typeof data.teachingMaterials === 'string', field: 'teachingMaterials' },
     { condition: typeof data.researchJournals === 'string', field: 'researchJournals' },
     { condition: typeof data.researchPapers === 'string', field: 'researchPapers' },
-    { condition: typeof data.publicationTime === 'string', field: 'publicationTime' },
+    // { condition: typeof data.publicationTime === 'string', field: 'publicationTime' },
     { condition: typeof data.impactFactor === 'number', field: 'impactFactor' },
     { condition: typeof data.researchProjects === 'string', field: 'researchProjects' },
     { condition: typeof data.projectNumbers === 'string', field: 'projectNumbers' },
@@ -358,7 +358,7 @@ const isValidPerson = (data: any): data is Person => {
     { condition: typeof data.projectTimePeriod === 'string', field: 'projectTimePeriod' },
     { condition: typeof data.patents === 'string', field: 'patents' },
     { condition: typeof data.patentTypes === 'string', field: 'patentTypes' },
-    { condition: typeof data.patentAuthorizationTime === 'string', field: 'patentAuthorizationTime' },
+    // { condition: typeof data.patentAuthorizationTime === 'string', field: 'patentAuthorizationTime' },
     { condition: typeof data.managementDepartments === 'string', field: 'managementDepartments' },
     { condition: typeof data.managementResponsibilities === 'string', field: 'managementResponsibilities' },
     { condition: typeof data.managementTeamSize === 'number', field: 'managementTeamSize' },
@@ -383,54 +383,57 @@ const isValidPerson = (data: any): data is Person => {
 
 // 获取人员详情
 const fetchPersonDetail = async () => {
-  loading.value = true;
-  error.value = '';
-  try {
-    // 获取路由参数中的人员ID
-    const idParam = route.params.id;
-    // 添加日志输出
-    console.log('获取到的 idParam:', idParam);
+    loading.value = true;
+    error.value = '';
+    try {
+        // 获取路由参数中的人员ID
+        const idParam = route.params.id;
+        // 添加日志输出
+        console.log('获取到的 idParam:', idParam);
 
-    // 简化ID转换逻辑，直接使用字符串或数字
-    let id: string | number;
-    if (typeof idParam === 'string') {
-      // 尝试解析为数字，如果失败则保留字符串
-      const numId = parseInt(idParam, 10);
-      id = isNaN(numId) ? idParam : numId;
-    } else {
-// 处理 idParam 为数组的情况，这里简单取数组的第一个元素并尝试转换为合适的类型
-if (Array.isArray(idParam)) {
-  const firstId = idParam[0];
-  if (typeof firstId === 'string') {
-    const numId = parseInt(firstId, 10);
-    id = isNaN(numId) ? firstId : numId;
-  } else {
-    id = firstId;
-  }
-} else {
-  id = idParam;
-}
-    }
-    // 检查ID是否有效
-    if (!id) throw new Error('无效的人员ID');
-    // 获取数据
-    const res = await PersonnelService.getPersonnelDetail(id);
-    console.log('接口返回的数据:', res);
+        let id: string | number;
+        if (typeof idParam === 'string') {
+            const numId = parseInt(idParam, 10);
+            id = isNaN(numId) ? idParam : numId;
+        } else if (Array.isArray(idParam)) {
+            const firstId = idParam[0];
+            if (typeof firstId === 'string') {
+                const numId = parseInt(firstId, 10);
+                id = isNaN(numId) ? firstId : numId;
+            } else {
+                id = firstId;
+            }
+        } else {
+            id = idParam;
+        }
 
-    // 这里需要根据实际情况调整，如果接口返回的数据是 { success: true, message: '...', data: {...} } 结构
-    const actualData = res.data || res;
-    // 验证数据结构
-    if (!isValidPerson(actualData)) {
-      throw new Error('获取的数据格式不正确');
+        // 检查ID是否有效
+        if (!id) throw new Error('无效的人员ID');
+        console.log('最终使用的 id:', id);
+
+        // 获取数据
+        const res = await PersonnelService.getPersonnelDetail(id);
+        console.log('接口返回的数据:', res);
+
+        // 检查接口返回的数据是否为 HTML 内容
+        if (typeof res.data === 'string' && res.data.includes('<!DOCTYPE html>')) {
+            throw new Error('接口返回异常数据，请检查后端接口配置');
+        }
+
+        // 根据实际情况调整，如果接口返回的数据是 { success: true, message: '...', data: {...} } 结构
+        const actualData = res.data || res;
+        // 验证数据结构
+        if (!isValidPerson(actualData)) {
+            throw new Error('获取的数据格式不正确');
+        }
+        personInfo.value = actualData;
+        console.log('人员详情:', personInfo.value);
+    } catch (err: any) {
+        error.value = err.message || '获取人员详情失败';
+        console.error('获取人员详情失败:', err);
+    } finally {
+        loading.value = false;
     }
-    personInfo.value = actualData;
-    console.log('人员详情:', personInfo.value);
-  } catch (err: any) {
-    error.value = err.message || '获取人员详情失败';
-    console.error('获取人员详情失败:', err);
-  } finally {
-    loading.value = false;
-  }
 };
 
 // 返回上一页

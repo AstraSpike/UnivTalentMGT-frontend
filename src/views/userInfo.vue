@@ -61,7 +61,7 @@
           </div>
           <div class="info-item">
             <div class="item-label">性别</div>
-            <div class="item-value">{{ baseInfo?.gender?? '-' }}</div>
+            <div class="item-value">{{ formattedGender?? '-' }}</div>
           </div>
           <div class="info-item">
             <div class="item-label">政治面貌</div>
@@ -93,9 +93,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref,computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { onMounted } from 'vue';
 import axios from 'axios';
 
 // 定义用户详细信息接口
@@ -151,9 +150,9 @@ interface user {
   maritalStatus?: string;
   ethnicity?: string;
   detailInfo?: any;
-    // 添加以下两个属性
-    research?: number;
-    teaching?: number;
+  research?: number;
+  teaching?: number;
+  birthday?: Date;
 }
 // 定义 props
 const props = defineProps<{
@@ -161,7 +160,12 @@ const props = defineProps<{
   baseInfo?: user | null;
 }>();
 const baseInfo = ref<user | null>(props.baseInfo ?? null);
-
+const formattedGender = computed(() => {
+  if (!baseInfo.value?.gender) return '-';
+  if (baseInfo.value.gender.toLowerCase() === 'male') return '男';
+  if (baseInfo.value.gender.toLowerCase() === 'female') return '女';
+  return baseInfo.value.gender;
+});
 const router = useRouter();
 const route = useRoute();
 const loading = ref(false);

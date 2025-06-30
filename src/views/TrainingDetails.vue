@@ -1,134 +1,44 @@
 <template>
-    <div class="main-content">
-      <div class="header">
-        <div class="page-title">{{'培训详情' }}</div>
-      </div>
-      
-      <div class="card">
-        <div class="card-title">
-          <div>{{'加载中...' }}</div>
-          <button class="btn btn-secondary" @click="goBack">返回</button>
+   <div class="main-content" :key="$route.fullPath">
+        <div class="card">
+            <div class="card-title">培训详情（{{ ability }}）</div>
+            <div class="detail-section">
+                <h3>基本信息</h3>
+                <p>能力维度: {{ ability }}</p>
+                <p>需培训人数: {{ count }}</p>
+            </div>
+            <div class="detail-section">
+                <h3>推荐参训人员</h3>
+                <ul>
+                    <li v-for="person in personnelList" :key="person.personnelId">
+                        {{ person.name }}（ID: {{ person.personnelId }}）
+                    </li>
+                </ul>
+            </div>
         </div>
-        
-        <div class="detail-container">
-          <div class="detail-section">
-            <h3 class="section-title">基本信息</h3>
-<div class="detail-row">
-  <div class="detail-label">能力维度:</div>
-  <div class="detail-value">
-    <span v-if="trainingData && trainingData.trainingNeeds && trainingData.trainingNeeds.length > 0">
-      <span v-for="(need, index) in trainingData.trainingNeeds" :key="need.skill">
-        {{ need.skill }}
-        <span v-if="index < trainingData.trainingNeeds.length - 1">、</span>
-      </span>
-    </span>
-    <span v-else>-</span>
-  </div>
-</div>
-            <div class="detail-row">
-              <div class="detail-label">需培训人数:</div>
-              <div class="detail-value">{{ '-' }}</div>
-            </div>
-<div class="detail-row">
-  <div class="detail-label">推荐课程:</div>
-  <div class="detail-value">
-    <span v-if="trainingData && trainingData.trainingCourses.length > 0">
-      <span v-for="(course, index) in trainingData.trainingCourses" :key="course.courseId">
-        {{ course.courseName }}
-        <span v-if="index < trainingData.trainingCourses.length - 1">、</span>
-      </span>
-    </span>
-    <span v-else>-</span>
-  </div>
-</div>
-          </div>
-          
-          <div class="detail-section">
-            <h3 class="section-title">详细描述</h3>
-            <div class="detail-description">
-              {{ '暂无详细描述' }}
-            </div>
-          </div>
-          
-          <div class="detail-section">
-            <h3 class="section-title">推荐参训人员</h3>
-            <div class="participants-container">
-              <!-- <div class="participant-item" v-for="(participant, index) in detailData.participants || []" :key="index"> -->
-                <!-- <div class="participant-avatar">
-                  {{ participant.name.charAt(0) }}
-                </div>
-                <div class="participant-info">
-                  <div class="participant-name">{{ participant.name }}</div>
-                  <div class="participant-position">{{ participant.position }}</div>
-                  <div class="participant-department">{{ participant.department }}</div>
-                </div>
-              </div> -->
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </template>
+</template>
   
   <script lang="ts" setup name="teach">
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted,onUnmounted } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
-  import axios from 'axios';
-// 为了解决找不到模块声明文件的问题，使用 @ts-ignore 临时忽略类型检查
-// @ts-ignore
-import { generateTrainingRecommendation, processTrainingData } from '../service/trainingService';
-interface TrainingData {
-    staffId: string;
-    trainingNeeds: { skill: string; priority: string }[];
-    trainingCourses: { courseName: string; courseId: string }[];
-}  
-
+  import { useTrainingStore } from '../stores/training';
+  const trainingStore = useTrainingStore();
   const router = useRouter();
   const route = useRoute();
   const goBack = () => {
     router.back();
   };
-  
-const staffId = 'S001';
-const capabilities = {
-  teaching: 4.5,
-  research: 4.8,
-  management: 3.9,
-  innovation: 4.2
-};
-const positionRequirements = {
-  requiredSkills: ["Data Analysis", "Machine Learning"],
-  minimumExperience: 3
-};
 
-const trainingData = ref<TrainingData | null>(null);;
-const loading = ref(false);
-const error = ref('');
-
-const fetchTrainingRecommendation = async () => {
-  loading.value = true;
-  error.value = '';
-  
-  try {
-    const response = await generateTrainingRecommendation({
-      staffId,
-      capabilities,
-      positionRequirements
-    });
-    trainingData.value = processTrainingData(response.data);
-    console.log(trainingData.value);
-  } catch (err) {
-     if (err instanceof Error) {
-            error.value = err.message;
-        } else {
-            error.value = '未知错误';
-        }
-  } finally {
-    loading.value = false;
-  }
-};
-// 组件挂载后立即获取培训推荐
-fetchTrainingRecommendation();
+  // 移除与personnelId相关的逻辑（因需求是展示整体信息，无需单个人员ID）
+  const loading = ref(false);
+  const error = ref('');
+// 从Pinia获取数据
+const { ability, count, courses, personnelList } = trainingStore.currentDetails || {};
+  // 组件卸载时清除数据
+onUnmounted(() => {
+  trainingStore.clearCurrentDetails();
+});
 </script>
   
   <style scoped>

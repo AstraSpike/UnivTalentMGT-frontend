@@ -6,93 +6,33 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     proxy: {
-      // 代理到端口 8084 的后端，对应 /users/login 等路径
+      // 代理到端口 8080 的网关，对应 /users/login 等路径
       '/users/login': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-         configure: (proxy, options) => {
-        proxy.on('proxyReq', (proxyReq, req, res) => {
-          console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
-        });
-        proxy.on('proxyRes', (proxyRes, req, res) => {
-          console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
-        });
-      }
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
       },
-      '/api/assessment/capability': {
-        target: 'http://127.0.0.1:5001',
+      //人员信息接口代理
+      '/basic': {
+        target: 'http://localhost:9086/personnel',
         changeOrigin: true,
         configure: (proxy, options) => {
-        proxy.on('proxyReq', (proxyReq, req, res) => {
-          console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
-        });
-        proxy.on('proxyRes', (proxyRes, req, res) => {
-          console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
-        });
-      }
-    },
-      // 假设还有一个后端在端口 5002，处理 /api/assessment/tags 开头的请求
-      '/api/assessment/tags': {
-        target: 'http://127.0.0.1:5002',
-        changeOrigin: true,
-        configure: (proxy, options) => {
-        proxy.on('proxyReq', (proxyReq, req, res) => {
-          console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
-        });
-        proxy.on('proxyRes', (proxyRes, req, res) => {
-          console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
-        });
-      }
-    },
-    '/api/team/recommend': {
-      target: 'http://127.0.0.1:5003',
-      changeOrigin: true,
-      configure: (proxy, options) => {
-      proxy.on('proxyReq', (proxyReq, req, res) => {
-        console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
-      });
-      proxy.on('proxyRes', (proxyRes, req, res) => {
-        console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
-      });
-    }
-  },
-  '/api/training/recommend': {
-    target: 'http://127.0.0.1:5004',
-    changeOrigin: true,
-    configure: (proxy, options) => {
-    proxy.on('proxyReq', (proxyReq, req, res) => {
-      console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
-    });
-    proxy.on('proxyRes', (proxyRes, req, res) => {
-      console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
-    });
-  }
-},
-'/api/team/monitor': {
-  target: 'http://127.0.0.1:5005',
-  changeOrigin: true,
-  configure: (proxy, options) => {
-  proxy.on('proxyReq', (proxyReq, req, res) => {
-    console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
-  });
-  proxy.on('proxyRes', (proxyRes, req, res) => {
-    console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
-  });
-}
-},
-'/basic': {
-  target: 'http://localhost:9086/personnel',
-  changeOrigin: true,
-  configure: (proxy, options) => {
-  proxy.on('proxyReq', (proxyReq, req, res) => {
-    console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
-  });
-  proxy.on('proxyRes', (proxyRes, req, res) => {
-    console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
-  });
-}
-},
-  '^/detail/\\d+': {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+      '^/detail/\\d+': {
         target: 'http://localhost:9086/personnel',
         changeOrigin: true,
         rewrite: (path) => {
@@ -108,101 +48,7 @@ export default defineConfig({
         },
         configure: (proxy, options) => {
           proxy.on('proxyReq', (proxyReq, req) => {
-            console.log(`[代理请求] ${req.method} ${req.url} → ${options.target}${req.url.replace('/detail', '')}`);
-          });
-          proxy.on('proxyRes', (proxyRes, req) => {
-            console.log(`[代理响应] ${proxyRes.statusCode} ${req.url}`);
-          });
-        }
-      },
-  '/demand/submit': {
-    target: 'http://localhost:8080',
-    changeOrigin: true,
-    secure: false,
-        // 关键配置：保留请求头
-        configure: (proxy, options) => {
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            const authHeader = req.headers['authorization'];
-            if (authHeader) {
-              proxyReq.setHeader('Authorization', authHeader);
-            }
-          });
-        },
-        // 允许携带凭证
-        credentials: 'include',
-  //   configure: (proxy, options) => {
-  //   proxy.on('proxyReq', (proxyReq, req, res) => {
-  //     console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
-  //   });
-  //   proxy.on('proxyRes', (proxyRes, req, res) => {
-  //     console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
-  //   });
-  // }
-},
-  '/demand/myDemands': {
-    target: 'http://localhost:8080',
-    changeOrigin: true,
-    configure: (proxy, options) => {
-    proxy.on('proxyReq', (proxyReq, req, res) => {
-      console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
-    });
-    proxy.on('proxyRes', (proxyRes, req, res) => {
-      console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
-    });
-  }
-},
-  '/demand/todoTasks': {
-    target: 'http://localhost:8080',
-    changeOrigin: true,
-    configure: (proxy, options) => {
-    proxy.on('proxyReq', (proxyReq, req, res) => {
-      console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
-    });
-    proxy.on('proxyRes', (proxyRes, req, res) => {
-      console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
-    });
-  }
-},                        
-  '/demand/^/detail/\\d+': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        rewrite: (path) => {
-          const match = path.match(/^\/detail\/(\d+)/);
-          if (match) {
-            const id = match[1];
-            // 正确转发到 /demand/detail/{id}
-            const newPath = `/detail/${id}`;
-            console.log(`路径重写: ${path} → ${newPath}`);
-            return newPath;
-          }
-          return path;
-        },
-        configure: (proxy, options) => {
-          proxy.on('proxyReq', (proxyReq, req) => {
-            console.log(`[代理请求] ${req.method} ${req.url} → ${options.target}${req.url.replace('/detail', '')}`);
-          });
-          proxy.on('proxyRes', (proxyRes, req) => {
-            console.log(`[代理响应] ${proxyRes.statusCode} ${req.url}`);
-          });
-        }
-      },
-  '^/process/\\d+': {
-        target: 'http://localhost:8080/process',
-        changeOrigin: true,
-        rewrite: (path) => {
-          const match = path.match(/^\/process\/(\d+)/);
-          if (match) {
-            const id = match[1];
-            // 正确转发到 /demand/process/{id}
-            const newPath = `/process/${id}`;
-            console.log(`路径重写: ${path} → ${newPath}`);
-            return newPath;
-          }
-          return path;
-        },
-        configure: (proxy, options) => {
-          proxy.on('proxyReq', (proxyReq, req) => {
-            console.log(`[代理请求] ${req.method} ${req.url} → ${options.target}${req.url.replace('/detail', '')}`);
+            console.log(`[代理请求] ${req.method} ${req.url} → ${options.target}${req.url.replace('/api', '')}`);
           });
           proxy.on('proxyRes', (proxyRes, req) => {
             console.log(`[代理响应] ${proxyRes.statusCode} ${req.url}`);
@@ -225,13 +71,224 @@ export default defineConfig({
         },
         configure: (proxy, options) => {
           proxy.on('proxyReq', (proxyReq, req) => {
-            console.log(`[代理请求] ${req.method} ${req.url} → ${options.target}${req.url.replace('/detail', '')}`);
+            console.log(`[代理请求] ${req.method} ${req.url} → ${options.target}${req.url.replace('', '')}`);
           });
           proxy.on('proxyRes', (proxyRes, req) => {
             console.log(`[代理响应] ${proxyRes.statusCode} ${req.url}`);
           });
         }
       },
-}
+      //部门对接接口代理
+       '/api/tasks': {
+        target: 'http://localhost:9087',
+        changeOrigin: true,
+        secure: false,
+        // 关键配置：保留请求头并添加日志
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('[Vite Proxy Log] 请求即将转发到: ', options.target);
+            console.log('[Vite Proxy Log] 请求方法: ', req.method);
+            console.log('[Vite Proxy Log] 请求路径: ', req.url);
+            const authHeader = req.headers['authorization'];
+            if (authHeader) {
+              proxyReq.setHeader('Authorization', authHeader);
+            }
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log('[Vite Proxy Log] 收到来自目标服务器的响应状态码: ', proxyRes.statusCode);
+          });
+        },
+        // 允许携带凭证
+        credentials: 'include'
+      },
+      '/api/tasks/receiver/\\d+': {
+        target: 'http://localhost:9087',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => {
+          const match = path.match(/^\/api\/tasks\/receiver\/(\d+)/);
+          if (match) {
+            const id = match[1];
+            const newPath = `/api/tasks/receiver/${id}`;
+            console.log(`Path rewrite: ${path} → ${newPath}`);
+            return newPath;
+          }
+          return path;
+        },
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('[Vite Proxy Log] 请求即将转发到: ', options.target);
+            console.log('[Vite Proxy Log] 请求方法: ', req.method);
+            console.log('[Vite Proxy Log] 请求路径: ', req.url);
+            const authHeader = req.headers['authorization'];
+            if (authHeader) {
+              proxyReq.setHeader('Authorization', authHeader);
+            }
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log('[Vite Proxy Log] 收到来自目标服务器的响应状态码: ', proxyRes.statusCode);
+          });
+        },
+      },
+      '/api/tasks/\\d+': {
+        target: 'http://localhost:9087',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => {
+          const match = path.match(/^\/api\/tasks\/(\d+)/); 
+          if (match) {
+            const id = match[1];
+            const newPath = `/api/tasks/${id}`;
+            console.log(`路径重写: ${path} → ${newPath}`);
+            return newPath;
+          }
+          return path;
+        },
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req) => {
+            console.log(`[代理请求] ${req.method} ${req.url} → ${options.target}${req.url.replace('', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req) => {
+            console.log(`[代理响应] ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+      //更新状态
+      '/api/tasks/\\d+/status': {
+        target: 'http://localhost:9087',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => {
+          const match = path.match(/^\/api\/tasks\/(\d+)\/status/);
+          if (match) {
+            const id = match[1];
+            // 正确转发到 /tasks/{id}
+            const newPath = `/api/tasks/${id}/status`;
+            console.log(`路径重写: ${path} → ${newPath}`);
+            return newPath;
+          }
+          return path;
+        },
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req) => {
+            console.log(`[代理请求] ${req.method} ${req.url} → ${options.target}${req.url.replace('', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req) => {
+            console.log(`[代理响应] ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+      //echarts接口代理
+        '/statistics/age': {
+        target: 'http://localhost:9086',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+        '/statistics/title': {
+        target: 'http://localhost:9086',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+        '/statistics/degree': {
+        target: 'http://localhost:9086',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+        '/statistics/political-status': {
+        target: 'http://localhost:9086',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('/api', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+      //培训接口代理
+        '/api/training/analyses/\d+': {
+        target: 'http://localhost:9088',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+      '/api/training/analyses/batch':{  
+        target: 'http://localhost:9088',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+        '/api/training/screened-personnel':{  
+        target: 'http://localhost:9088',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+        '/api/training/training-list':{  
+        target: 'http://localhost:9088',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+        '/api/training/records':{  
+        target: 'http://localhost:9088',
+        changeOrigin: true,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy] 转发请求: ${req.method} ${req.url} -> ${options.target}${req.url.replace('', '')}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy] 收到响应: ${proxyRes.statusCode} ${req.url}`);
+          });
+        }
+      },
+      
     }
-  })
+  }
+});

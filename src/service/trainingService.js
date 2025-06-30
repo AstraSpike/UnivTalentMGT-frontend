@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+// Create a trainingService instance
+const trainingService = axios.create();
 /**
  * 根据干部能力评估和岗位胜任力模型生成培训推荐
  * @param {string} staffId - 干部ID
@@ -7,19 +9,19 @@ import axios from 'axios';
  * @param {number} capabilities.teaching - 教学能力评分
  * @param {number} capabilities.research - 科研能力评分
  * @param {number} capabilities.management - 管理能力评分
- * @param {number} capabilities.innovation - 创新能力评分
+ * @param {number} capabilities.innovation - 创新
  * @param {Object} positionRequirements - 岗位要求
  * @param {Array<string>} positionRequirements.requiredSkills - 岗位所需技能
  * @param {number} positionRequirements.minimumExperience - 最低工作经验
  * @returns {Promise<Object>} - 包含培训需求和计划的响应
  */
-export async function generateTrainingRecommendation({
+async function generateTrainingRecommendation({
   staffId,
   capabilities,
   positionRequirements
 }) {
   try {
-    const response = await axios.post('/api/training/recommend', {
+    const response = await axios.post('/api/training/records', {
       staffId,
       capabilities,
       positionRequirements
@@ -38,7 +40,7 @@ export async function generateTrainingRecommendation({
  * @param {Object} data - API返回的原始数据
  * @returns {Object} - 格式化后的培训需求数据
  */
-export function processTrainingData(response) {
+function processTrainingData(response) {
   const data = response.data || response;
   
   console.log('[processTrainingData] 原始数据:', JSON.stringify(data, null, 2));
@@ -63,7 +65,7 @@ export function processTrainingData(response) {
 
   // 提取并验证trainingPlan（关键修改：处理数组类型的trainingPlan）
   let trainingCourses = [];
-  
+
   if (Array.isArray(data.trainingPlan)) {
     // 如果trainingPlan是数组，直接将其作为课程列表
     trainingCourses = data.trainingPlan.map(course => ({
@@ -95,3 +97,5 @@ export function processTrainingData(response) {
     trainingCourses
   };
 }
+
+export { generateTrainingRecommendation, processTrainingData, trainingService };

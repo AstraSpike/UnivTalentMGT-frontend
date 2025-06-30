@@ -46,16 +46,16 @@
                     <div ref="teachingChart" class="chart-container"></div>
                 </div>
                 <div class="card">
-                    <div class="card-title">科研业绩分布</div>
-                    <div ref="researchChart" class="chart-container"></div>
+                    <div class="card-title">政治面貌</div>
+                    <div ref="politicalChart" class="chart-container"></div>
                 </div>
                 <div class="card">
-                    <div class="card-title">晋升趋势</div>
-                    <div ref="promotionChart" class="chart-container"></div>
+                    <div class="card-title">学位</div>
+                    <div ref="degreeChart" class="chart-container"></div>
                 </div>
                 <div class="card">
-                    <div class="card-title">绩效等级对比</div>
-                    <div ref="performanceChart" class="chart-container"></div>
+                    <div class="card-title">行政人员/科研人员</div>
+                    <div ref="staffTypeChart" class="chart-container"></div>
                 </div>
             </div>
         </div>
@@ -69,48 +69,77 @@ import * as echarts from 'echarts';
 const ageChart = ref(null);
 const titleChart = ref(null);
 const teachingChart = ref(null);
-const researchChart = ref(null);
-const promotionChart = ref(null);
-const performanceChart = ref(null);
+const politicalChart = ref(null);
+const degreeChart = ref(null);
+const staffTypeChart = ref(null);
 
-onMounted(() => {
-    // 干部教师年龄分布柱状图优化
+// 定义科研人员职称
+const researchTitles = ['副教授', '教授', '助教', '科员'];
+// 定义数据 ref
+const ageData = ref({});
+const titleData = ref({});
+const politicalStatusData = ref({});
+const degreeData = ref({});
+
+// 获取统计数据
+const fetchData = async () => {
+    try {
+        // 获取年龄分布统计
+        const ageResponse = await fetch('/statistics/age');
+        ageData.value = await ageResponse.json();
+
+        // 获取职称统计
+        const titleResponse = await fetch('/statistics/title');
+        titleData.value = await titleResponse.json();
+
+        // 获取政治面貌统计
+        const politicalStatusResponse = await fetch('/statistics/political-status');
+        politicalStatusData.value = await politicalStatusResponse.json();
+
+        // 获取学历统计
+        const degreeResponse = await fetch('/statistics/degree');
+        degreeData.value = await degreeResponse.json();
+        // 更新图表
+        updateCharts();
+    } catch (error) {
+        console.error('获取统计数据失败:', error);
+    }
+};
+
+// 更新图表
+const updateCharts = () => {
+    // 干部教师年龄分布柱状图
     if (ageChart.value) {
         const chart = echarts.init(ageChart.value);
-        const option = { 
-            tooltip: { 
-                trigger: 'axis', 
-                formatter: '{b} 岁区间: {c} 人' 
-            }, 
-            xAxis: { 
-                type: 'category', 
-                data: ['20-30', '31-40', '41-50', '51-60'] 
-            }, 
+        const data = Object.entries(ageData.value).map(([name, value]) => ({ name, value }));
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                formatter: '{b} 岁区间: {c} 人'
+            },
+            xAxis: {
+                type: 'category',
+                data: Object.keys(ageData.value)
+            },
             yAxis: {
                 type: 'value'
             },
             series: [{
-                data: [120, 200, 150, 80],
+                data: Object.values(ageData.value),
                 type: 'bar'
             }]
         };
         chart.setOption(option);
     }
 
-    // 职称分布饼图优化
+    // 职称分布饼图
     if (titleChart.value) {
         const chart = echarts.init(titleChart.value);
-        const data = [
-            { value: 1048, name: '教授' },
-            { value: 735, name: '副教授' },
-            { value: 580, name: '讲师' },
-            { value: 484, name: '助教' }
-        ];
+        const data = Object.entries(titleData.value).map(([name, value]) => ({ name, value }));
         const option = {
             tooltip: {
                 trigger: 'item',
-                formatter: function(params) {
-                    // 修改为直接显示名称和数值
+                formatter: function(params: any) {
                     return params.name + ': ' + params.value + ' 人';
                 }
             },
@@ -130,7 +159,101 @@ onMounted(() => {
         chart.setOption(option);
     }
 
-    // 教学成果雷达图优化
+    // 政治面貌饼图
+    if (politicalChart.value) {
+        const chart = echarts.init(politicalChart.value);
+        const data = Object.entries(politicalStatusData.value).map(([name, value]) => ({ name, value }));
+        const option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: function(params: any) {
+                    return params.name + ': ' + params.value + ' 人';
+                }
+            },
+            series: [{
+                type: 'pie',
+                radius: '50%',
+                data: data,
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }]
+        };
+        chart.setOption(option);
+    }
+
+    // 学位柱状图
+    if (degreeChart.value) {
+        const chart = echarts.init(degreeChart.value);
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                formatter: '{b}: {c} 人'
+            },
+            xAxis: {
+                type: 'category',
+                data: Object.keys(degreeData.value)
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: Object.values(degreeData.value),
+                type: 'bar'
+            }]
+        };
+        chart.setOption(option);
+    }
+        if (staffTypeChart.value) {
+        const chart = echarts.init(staffTypeChart.value);
+        let researchCount = 0;
+        let adminCount = 0;
+
+        // 遍历职称数据，按职称划分人员
+        for (const [title, count] of Object.entries(titleData.value)) {
+            if (researchTitles.includes(title)) {
+                researchCount += Number(count);
+            } else {
+                adminCount += Number(count);
+            }
+        }
+
+        const data = [
+            { value: adminCount, name: '行政人员' },
+            { value: researchCount, name: '科研人员' }
+        ];
+        const option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: function(params: any) {
+                    return params.name + ': ' + params.value + ' 人';
+                }
+            },
+            series: [{
+                type: 'pie',
+                radius: '50%',
+                data: data,
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }]
+        };
+        chart.setOption(option);
+    }
+};
+
+onMounted(() => {
+    fetchData();
+
+    // 教学成果雷达图和行政人员/科研人员饼图因无对应 API，保持原有静态数据
     if (teachingChart.value) {
         const chart = echarts.init(teachingChart.value);
         const option = {
@@ -154,94 +277,43 @@ onMounted(() => {
         chart.setOption(option);
     }
 
-    // 科研业绩热力图优化
-    if (researchChart.value) {
-        const chart = echarts.init(researchChart.value);
-        const data = [];
-        const hours = ['12a', '1a', '2a', '3a', '4a', '5a', '6a', '7a', '8a', '9a', '10a', '11a',
-            '12p', '1p', '2p', '3p', '4p', '5p', '6p', '7p', '8p', '9p', '10p', '11p'
-        ];
-        const days = ['Saturday', 'Friday', 'Thursday', 'Wednesday', 'Tuesday', 'Monday', 'Sunday'];
-
-        for (let i = 0; i < 24; i++) {
-            for (let j = 0; j < 7; j++) {
-                data.push([j, i, Math.floor(Math.random() * 100)]);
-            }
-        }
-
-        const option = {
-            tooltip: {},
-            visualMap: {
-                min: 0,
-                max: 100,
-                calculable: true,
-                orient: 'vertical',
-                left: 'left',
-                top: 'center'
-            },
-            xAxis: {
-                type: 'category',
-                data: days
-            },
-            yAxis: {
-                type: 'category',
-                data: hours
-            },
-            series: [{
-                name: 'Punch Card',
-                type: 'heatmap',
-                data: data
-            }]
-        };
-        chart.setOption(option);
-    }
-
-    // 晋升趋势折线图优化
-    if (promotionChart.value) {
-        const chart = echarts.init(promotionChart.value);
-        const option = {
-            tooltip: {
-                trigger: 'axis',
-                formatter: '{b} 年: {c} 人'
-            },
-            xAxis: {
-                type: 'category',
-                data: ['2016', '2017', '2018', '2019', '2020', '2021', '2022']
-            },
-            yAxis: {
-                type: 'value'
-            },
-            series: [{
-                data: [120, 132, 101, 134, 90, 230, 210],
-                type: 'line'
-            }]
-        };
-        chart.setOption(option);
-    }
-
-    // 绩效等级对比条形图优化
-    if (performanceChart.value) {
-        const chart = echarts.init(performanceChart.value);
-        const option = {
-            tooltip: {
-                trigger: 'axis',
-                formatter: '{b} 等级: {c} 人'
-            },
-            xAxis: {
-                type: 'value'
-            },
-            yAxis: {
-                type: 'category',
-                data: ['A', 'B', 'C', 'D', 'E']
-            },
-            series: [{
-                type: 'bar',
-                data: [120, 200, 150, 80, 70]
-            }]
-        };
-        chart.setOption(option);
-    }
+    // if (staffTypeChart.value) {
+    //     const chart = echarts.init(staffTypeChart.value);
+    //     const data = [
+    //         { value: 120, name: '行政人员' },
+    //         { value: 200, name: '科研人员' }
+    //     ];
+    //     const option = {
+    //         tooltip: {
+    //             trigger: 'item',
+    //             formatter: function(params) {
+    //                 return params.name + ': ' + params.value + ' 人';
+    //             }
+    //         },
+    //         series: [{
+    //             type: 'pie',
+    //             radius: '50%',
+    //             data: data,
+    //             emphasis: {
+    //                 itemStyle: {
+    //                     shadowBlur: 10,
+    //                     shadowOffsetX: 0,
+    //                     shadowColor: 'rgba(0, 0, 0, 0.5)'
+    //                 }
+    //             }
+    //         }]
+    //     };
+    //     chart.setOption(option);
+    // }
 });
+
+// 删除原有的图表初始化代码
+// if (teachingChart.value) {
+// ...
+// }
+// if (staffTypeChart.value) {
+// ...
+// }
 </script>
 
 <style src="../components/style.css">

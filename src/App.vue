@@ -22,17 +22,20 @@
           </div>
         </div>
         
-        <!-- 优化后的绘画按钮 -->
+        <!-- 优化后的绘画按钮
         <button @click="toggleDrawing" class="drawing-button">
           <i class="fa fa-pencil"></i>
           <span>开启涂画</span>
-        </button>
+        </button> -->
       </div>
       
       <div class="main-content" :class="{ 'full-screen': isFullScreen }">
         <div class="header">
           <h2>欢迎您</h2>
           <div class="user-info">
+             <button @click="toggleDrawing" class="drawing-button">
+          <i class="fa fa-pencil"></i>
+            </button>
             <RouterLink to="/userinfo">
               <div class="user-avatar">校</div>
             </RouterLink>
@@ -241,6 +244,7 @@ body {
   align-items: center;
   padding: 10px 0;
   margin-bottom: 20px;
+  z-index: 1000;
   border-bottom: 1px solid #e8e8e8;
 }
 
